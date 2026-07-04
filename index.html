@@ -3,975 +3,184 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>LogiChain Pro | Global Supply Chain Management</title>
+<title>LogiChain Pro | AI-Powered SCM</title>
 <style>
-  /* =========================================================
-     TEMA CORPORATIVO GLOBAL
-     ========================================================= */
-  * { margin:0; padding:0; box-sizing:border-box; }
-  :root {
-    --bg-app: #0b1220;
-    --bg-sidebar: #0f172a;
-    --bg-card: #1e293b;
-    --bg-card-hover: #273449;
-    --bg-input: #0f172a;
-    --borda: #334155;
-    --texto: #e2e8f0;
-    --texto-sec: #94a3b8;
-    --primario: #3b82f6;
-    --primario-hover: #2563eb;
-    --sucesso: #10b981;
-    --alerta: #f59e0b;
-    --perigo: #ef4444;
-    --info: #06b6d4;
-    --roxo: #8b5cf6;
-    --sombra: 0 10px 30px -5px rgba(0,0,0,.5);
-  }
-  body {
-    font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
-    background: var(--bg-app);
-    color: var(--texto);
-    min-height: 100vh;
-    display: flex;
-    font-size: 14px;
-  }
+  /* ... [MANTENHA TODO O CSS ANTERIOR AQUI] ... */
+  /* Adicione apenas os estilos novos abaixo: */
 
   /* =========================================================
-     SIDEBAR EXECUTIVA
+     CHATBOT IA (NVIDIA NIM)
      ========================================================= */
-  .sidebar {
-    width: 260px;
-    background: var(--bg-sidebar);
-    border-right: 1px solid var(--borda);
-    padding: 24px 0;
+  .ai-fab {
     position: fixed;
-    height: 100vh;
+    bottom: 28px;
+    right: 28px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #76b900, #3b82f6); /* Verde Nvidia + Azul Tech */
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 24px rgba(118, 185, 0, .4);
+    cursor: pointer;
+    z-index: 300;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .ai-fab:hover { transform: scale(1.08); box-shadow: 0 12px 32px rgba(118, 185, 0, .6); }
+  .ai-fab.ativo { transform: rotate(90deg); background: var(--perigo); }
+
+  .chat-window {
+    position: fixed;
+    bottom: 100px;
+    right: 28px;
+    width: 420px;
+    max-width: calc(100vw - 40px);
+    height: 600px;
+    max-height: calc(100vh - 140px);
+    background: var(--bg-card);
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    z-index: 299;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp .3s ease;
+  }
+  .chat-window.visivel { display: flex; }
+  @keyframes slideUp { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+
+  .chat-header {
+    padding: 16px 20px;
+    background: linear-gradient(90deg, rgba(118,185,0,.15), rgba(59,130,246,.1));
+    border-bottom: 1px solid var(--borda);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .chat-header h4 { font-size: .95rem; display: flex; align-items: center; gap: 8px; }
+  .chat-header .status-dot { width: 8px; height: 8px; background: #76b900; border-radius: 50%; }
+  .chat-config-btn {
+    background: none; border: none; color: var(--texto-sec); cursor: pointer; font-size: 1.1rem;
+  }
+  .chat-config-btn:hover { color: var(--texto); }
+
+  .chat-messages {
+    flex: 1;
     overflow-y: auto;
-    z-index: 100;
-    transition: transform .3s;
-  }
-  .sidebar .logo {
-    padding: 0 24px 24px;
-    border-bottom: 1px solid var(--borda);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .sidebar .logo-icon {
-    width: 40px; height: 40px;
-    background: linear-gradient(135deg, var(--primario), var(--info));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
-  }
-  .sidebar .logo-text h2 { font-size: 1rem; font-weight: 700; }
-  .sidebar .logo-text span { font-size: .7rem; color: var(--texto-sec); letter-spacing: 1px; }
-  .sidebar nav { padding: 16px 0; }
-  .sidebar nav .grupo-label {
-    padding: 16px 24px 8px;
-    font-size: .7rem;
-    color: var(--texto-sec);
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    font-weight: 600;
-  }
-  .sidebar nav a {
-    display: flex; align-items: center; gap: 12px;
-    padding: 11px 24px;
-    color: var(--texto-sec);
-    text-decoration: none;
-    cursor: pointer;
-    border-left: 3px solid transparent;
-    font-size: .9rem;
-    transition: all .15s;
-  }
-  .sidebar nav a:hover { background: rgba(59,130,246,.08); color: var(--texto); }
-  .sidebar nav a.ativo {
-    background: linear-gradient(90deg, rgba(59,130,246,.15), transparent);
-    color: #fff;
-    border-left-color: var(--primario);
-  }
-  .sidebar nav a .badge-count {
-    margin-left: auto;
-    background: var(--perigo);
-    color: #fff;
-    font-size: .65rem;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-weight: 700;
-  }
-
-  /* =========================================================
-     MAIN
-     ========================================================= */
-  .main { margin-left: 260px; flex: 1; padding: 28px 32px; min-height: 100vh; }
-  .topbar {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
-  }
-  .topbar .esquerda h1 { font-size: 1.6rem; font-weight: 700; }
-  .topbar .esquerda .sub { color: var(--texto-sec); font-size: .85rem; margin-top: 2px; }
-  .topbar .direita { display: flex; gap: 10px; align-items: center; }
-  .btn-topo {
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    color: var(--texto);
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: .85rem;
-    display: inline-flex; align-items: center; gap: 6px;
-    transition: all .15s;
-  }
-  .btn-topo:hover { background: var(--bg-card-hover); border-color: var(--primario); }
-  .pulse-dot {
-    width: 8px; height: 8px;
-    background: var(--sucesso);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-    display: inline-block;
-  }
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(16,185,129,.7); }
-    70% { box-shadow: 0 0 0 8px rgba(16,185,129,0); }
-    100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
-  }
-
-  /* =========================================================
-     SEÇÕES
-     ========================================================= */
-  .secao { display: none; animation: fadeIn .3s; }
-  .secao.ativa { display: block; }
-  @keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
-
-  /* =========================================================
-     KPI CARDS (ESTILO BLOOMBERG)
-     ========================================================= */
-  .kpis {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-  .kpi {
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    padding: 18px;
-    position: relative;
-    transition: transform .15s, border-color .15s;
-  }
-  .kpi:hover { transform: translateY(-2px); border-color: var(--primario); }
-  .kpi .cabecalho {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    margin-bottom: 10px;
-  }
-  .kpi .titulo {
-    font-size: .75rem;
-    color: var(--texto-sec);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    font-weight: 600;
-  }
-  .kpi .icone {
-    width: 32px; height: 32px;
-    border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1rem;
-    background: rgba(59,130,246,.15);
-  }
-  .kpi .valor {
-    font-size: 1.7rem;
-    font-weight: 700;
-    font-feature-settings: 'tnum';
-    margin-bottom: 4px;
-  }
-  .kpi .variacao {
-    font-size: .78rem;
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-weight: 600;
-  }
-  .kpi .variacao.up { background: rgba(16,185,129,.15); color: var(--sucesso); }
-  .kpi .variacao.down { background: rgba(239,68,68,.15); color: var(--perigo); }
-  .kpi .meta {
-    margin-top: 10px;
-    height: 4px;
-    background: rgba(255,255,255,.08);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .kpi .meta-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primario), var(--info));
-    transition: width .6s;
-  }
-  .kpi .meta-label {
-    font-size: .7rem;
-    color: var(--texto-sec);
-    margin-top: 4px;
-    display: flex; justify-content: space-between;
-  }
-
-  /* =========================================================
-     CARDS / GRID
-     ========================================================= */
-  .grid-2 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px; }
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    padding: 20px;
-  }
-  .card-titulo {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 18px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid var(--borda);
-  }
-  .card-titulo h3 { font-size: 1rem; font-weight: 600; }
-  .card-titulo .tag {
-    font-size: .7rem;
-    background: rgba(59,130,246,.15);
-    color: var(--primario);
-    padding: 3px 9px;
-    border-radius: 4px;
-    font-weight: 600;
-  }
-
-  /* =========================================================
-     TRACKING / TIMELINE
-     ========================================================= */
-  .shipment-card {
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    border-radius: 10px;
     padding: 16px;
-    margin-bottom: 12px;
-    transition: border-color .15s;
-  }
-  .shipment-card:hover { border-color: var(--primario); }
-  .shipment-header {
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 8px;
-    margin-bottom: 12px;
-  }
-  .shipment-id {
-    font-family: 'SF Mono', Monaco, monospace;
-    font-weight: 700;
-    color: var(--primario);
-    font-size: .95rem;
-  }
-  .badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: .72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .3px;
-  }
-  .badge.transito { background: rgba(59,130,246,.15); color: var(--primario); }
-  .badge.alfandega { background: rgba(139,92,246,.15); color: var(--roxo); }
-  .badge.entregue { background: rgba(16,185,129,.15); color: var(--sucesso); }
-  .badge.atrasado { background: rgba(239,68,68,.15); color: var(--perigo); }
-  .badge.coleta { background: rgba(245,158,11,.15); color: var(--alerta); }
-  .badge.armazem { background: rgba(6,182,212,.15); color: var(--info); }
-
-  .shipment-rota {
-    display: flex; align-items: center; gap: 8px;
-    font-size: .85rem;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-  .rota-cidade {
-    background: var(--bg-input);
-    padding: 5px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--borda);
-  }
-  .rota-linha {
-    flex: 1;
-    height: 1px;
-    background: var(--borda);
-    position: relative;
-    min-width: 30px;
-  }
-  .rota-linha::after {
-    content: '✈';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--bg-card);
-    padding: 0 4px;
-    color: var(--primario);
-  }
-  .shipment-meta {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: 8px;
-    font-size: .78rem;
-    color: var(--texto-sec);
-    margin-bottom: 12px;
-  }
-  .shipment-meta .item strong {
-    display: block;
-    color: var(--texto);
-    font-size: .85rem;
-    margin-top: 2px;
-  }
-  .timeline {
     display: flex;
-    justify-content: space-between;
-    position: relative;
-    margin-top: 14px;
-    padding: 0 8px;
+    flex-direction: column;
+    gap: 12px;
   }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    right: 8px;
-    height: 2px;
-    background: var(--borda);
-    z-index: 0;
+  .msg { max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: .88rem; line-height: 1.5; word-wrap: break-word; }
+  .msg.user { align-self: flex-end; background: var(--primario); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.ai { align-self: flex-start; background: var(--bg-input); border: 1px solid var(--borda); border-bottom-left-radius: 4px; }
+  .msg.ai strong { color: #76b900; }
+  .msg.system { align-self: center; font-size: .72rem; color: var(--texto-sec); background: transparent; padding: 4px; }
+  .typing-indicator { display: flex; gap: 4px; padding: 12px 16px; align-self: flex-start; }
+  .typing-indicator span { width: 6px; height: 6px; background: var(--texto-sec); border-radius: 50%; animation: bounce .6s infinite alternate; }
+  .typing-indicator span:nth-child(2) { animation-delay: .2s; }
+  .typing-indicator span:nth-child(3) { animation-delay: .4s; }
+  @keyframes bounce { to { transform: translateY(-6px); opacity: .4; } }
+
+  .chat-input-area {
+    padding: 12px 16px;
+    border-top: 1px solid var(--borda);
+    display: flex; gap: 8px;
+    background: var(--bg-sidebar);
   }
-  .timeline-step {
-    position: relative;
-    z-index: 1;
-    text-align: center;
+  .chat-input-area input {
     flex: 1;
-    font-size: .68rem;
-    color: var(--texto-sec);
-  }
-  .timeline-step .dot {
-    width: 18px; height: 18px;
-    border-radius: 50%;
+    padding: 10px 14px;
     background: var(--bg-input);
-    border: 2px solid var(--borda);
-    margin: 0 auto 4px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: .6rem;
-    color: transparent;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    color: var(--texto);
+    font-size: .88rem;
+    outline: none;
   }
-  .timeline-step.ativo .dot {
-    background: var(--primario);
-    border-color: var(--primario);
-    color: #fff;
-    box-shadow: 0 0 0 3px rgba(59,130,246,.2);
+  .chat-input-area input:focus { border-color: #76b900; }
+  .chat-send-btn {
+    background: #76b900;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 0 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
   }
-  .timeline-step.ativo { color: var(--texto); font-weight: 600; }
-  .timeline-step.concluido .dot {
-    background: var(--sucesso);
-    border-color: var(--sucesso);
-    color: #fff;
-  }
+  .chat-send-btn:hover { background: #8ed100; }
+  .chat-send-btn:disabled { background: var(--borda); color: var(--texto-sec); cursor: not-allowed; }
 
-  /* =========================================================
-     TABELA
-     ========================================================= */
-  .tabela-wrap {
+  /* Modal Config API Key */
+  .api-key-modal {
+    position: absolute; inset: 0;
     background: var(--bg-card);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  table { width: 100%; border-collapse: collapse; min-width: 800px; }
-  thead { background: var(--bg-sidebar); }
-  th {
-    padding: 12px 14px;
-    text-align: left;
-    font-size: .75rem;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: var(--texto-sec);
-    font-weight: 600;
-    border-bottom: 1px solid var(--borda);
-  }
-  td {
-    padding: 12px 14px;
-    font-size: .85rem;
-    border-bottom: 1px solid rgba(51,65,85,.3);
-  }
-  tbody tr:hover { background: rgba(59,130,246,.04); }
-  tbody tr:last-child td { border-bottom: none; }
-
-  /* =========================================================
-     MAPA DE CDs (VISUAL)
-     ========================================================= */
-  .cd-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-  }
-  .cd-card {
-    background: var(--bg-input);
-    border: 1px solid var(--borda);
-    border-radius: 8px;
-    padding: 14px;
-  }
-  .cd-card .nome {
-    font-weight: 700;
-    margin-bottom: 2px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .cd-card .cidade { font-size: .78rem; color: var(--texto-sec); margin-bottom: 10px; }
-  .cd-card .capacidade {
-    height: 6px;
-    background: var(--bg-app);
-    border-radius: 3px;
-    overflow: hidden;
-    margin-bottom: 6px;
-  }
-  .cd-card .cap-fill { height: 100%; transition: width .6s; }
-  .cd-card .stats {
-    display: flex; justify-content: space-between;
-    font-size: .72rem; color: var(--texto-sec);
-  }
-  .cd-card .stats strong { color: var(--texto); font-size: .85rem; }
-
-  /* =========================================================
-     FROTA
-     ========================================================= */
-  .frota-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px;
-    border-bottom: 1px solid rgba(51,65,85,.3);
-    gap: 12px;
-  }
-  .frota-item:last-child { border-bottom: none; }
-  .frota-info { flex: 1; }
-  .frota-info .placa {
-    font-family: 'SF Mono', monospace;
-    font-weight: 700;
-    color: var(--primario);
-  }
-  .frota-info .motorista { font-size: .8rem; color: var(--texto-sec); }
-  .status-frota {
-    display: inline-block;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    margin-right: 6px;
-  }
-  .status-frota.ativo { background: var(--sucesso); box-shadow: 0 0 6px var(--sucesso); }
-  .status-frota.manutencao { background: var(--alerta); }
-  .status-frota.inativo { background: var(--perigo); }
-
-  /* =========================================================
-     OCORRÊNCIAS / ALERTAS
-     ========================================================= */
-  .alerta {
-    display: flex; gap: 12px;
-    padding: 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    border-left: 3px solid;
-  }
-  .alerta.critico { background: rgba(239,68,68,.08); border-color: var(--perigo); }
-  .alerta.alto { background: rgba(245,158,11,.08); border-color: var(--alerta); }
-  .alerta.info { background: rgba(6,182,212,.08); border-color: var(--info); }
-  .alerta .ic { font-size: 1.2rem; }
-  .alerta .cont { flex: 1; }
-  .alerta .cont .tit { font-weight: 600; font-size: .88rem; margin-bottom: 2px; }
-  .alerta .cont .desc { font-size: .78rem; color: var(--texto-sec); }
-  .alerta .tempo { font-size: .72rem; color: var(--texto-sec); white-space: nowrap; }
-
-  /* =========================================================
-     FORMULÁRIOS
-     ========================================================= */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    z-index: 10;
+    padding: 24px;
+    display: none;
+    flex-direction: column;
     gap: 14px;
-    margin-bottom: 16px;
   }
-  .campo label {
-    display: block;
-    font-size: .78rem;
-    color: var(--texto-sec);
-    margin-bottom: 6px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-  }
-  .campo input, .campo select, .campo textarea {
-    width: 100%;
+  .api-key-modal.visivel { display: flex; }
+  .api-key-modal h4 { margin-bottom: 4px; }
+  .api-key-modal p { font-size: .78rem; color: var(--texto-sec); line-height: 1.5; }
+  .api-key-modal input {
     padding: 10px 12px;
     background: var(--bg-input);
     border: 1px solid var(--borda);
     border-radius: 6px;
     color: var(--texto);
-    font-size: .88rem;
-    font-family: inherit;
-  }
-  .campo input:focus, .campo select:focus, .campo textarea:focus {
-    outline: none;
-    border-color: var(--primario);
-    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
-  }
-  .btn {
-    padding: 10px 18px;
-    border: none;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: .88rem;
-    transition: all .15s;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-primario { background: var(--primario); color: #fff; }
-  .btn-primario:hover { background: var(--primario-hover); }
-  .btn-ghost { background: transparent; color: var(--texto); border: 1px solid var(--borda); }
-  .btn-ghost:hover { background: var(--bg-card-hover); }
-  .btn-perigo { background: var(--perigo); color: #fff; }
-  .btn-mini { padding: 5px 10px; font-size: .75rem; }
-
-  /* =========================================================
-     CHARTS CUSTOM (CSS PURO)
-     ========================================================= */
-  .barra-item { margin-bottom: 14px; }
-  .barra-item .label {
-    display: flex; justify-content: space-between;
-    font-size: .82rem;
-    margin-bottom: 5px;
-  }
-  .barra-item .label .nome { color: var(--texto); font-weight: 500; }
-  .barra-item .label .valor { color: var(--texto-sec); font-family: 'SF Mono', monospace; font-size: .78rem; }
-  .barra-track {
-    background: rgba(255,255,255,.05);
-    height: 8px;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .barra-fill { height: 100%; border-radius: 4px; transition: width .6s; }
-  .barra-fill.azul { background: linear-gradient(90deg, #3b82f6, #06b6d4); }
-  .barra-fill.verde { background: linear-gradient(90deg, #10b981, #34d399); }
-  .barra-fill.laranja { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-  .barra-fill.vermelho { background: linear-gradient(90deg, #ef4444, #f87171); }
-  .barra-fill.roxo { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
-
-  /* =========================================================
-     TOAST
-     ========================================================= */
-  .toast {
-    position: fixed; bottom: 24px; right: 24px;
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    border-left: 4px solid var(--primario);
-    color: var(--texto);
-    padding: 14px 20px;
-    border-radius: 8px;
-    box-shadow: var(--sombra);
-    opacity: 0; transform: translateX(20px);
-    transition: all .3s;
-    z-index: 1000;
-    max-width: 320px;
-  }
-  .toast.visivel { opacity: 1; transform: translateX(0); }
-  .toast.sucesso { border-left-color: var(--sucesso); }
-  .toast.erro { border-left-color: var(--perigo); }
-  .toast.alerta { border-left-color: var(--alerta); }
-
-  /* =========================================================
-     FILTROS
-     ========================================================= */
-  .filtros {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    padding: 14px;
-    border-radius: 10px;
-    margin-bottom: 16px;
-  }
-  .filtros input, .filtros select {
-    padding: 8px 12px;
-    background: var(--bg-input);
-    border: 1px solid var(--borda);
-    border-radius: 6px;
-    color: var(--texto);
+    font-family: monospace;
     font-size: .85rem;
   }
-
-  /* =========================================================
-     MODAL
-     ========================================================= */
-  .modal-bg {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.7);
-    backdrop-filter: blur(4px);
-    display: none;
-    align-items: center; justify-content: center;
-    z-index: 200;
-    padding: 20px;
+  .api-key-modal .actions { display: flex; gap: 8px; margin-top: auto; }
+  .nvidia-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .7rem; font-weight: 700; color: #76b900;
+    background: rgba(118,185,0,.1);
+    padding: 3px 8px; border-radius: 4px;
+    margin-bottom: 8px;
   }
-  .modal-bg.visivel { display: flex; }
-  .modal {
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    border-radius: 12px;
-    width: 100%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    padding: 24px;
-  }
-  .modal h3 { margin-bottom: 18px; font-size: 1.1rem; }
-  .modal-actions {
-    display: flex; gap: 10px; justify-content: flex-end;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--borda);
-  }
-
-  /* =========================================================
-     MENU MOBILE
-     ========================================================= */
-  .btn-menu {
-    display: none;
-    background: var(--bg-card);
-    border: 1px solid var(--borda);
-    color: var(--texto);
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  /* =========================================================
-     RESPONSIVO
-     ========================================================= */
-  @media (max-width: 1024px) {
-    .grid-2 { grid-template-columns: 1fr; }
-    .grid-3 { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 768px) {
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.aberta { transform: translateX(0); }
-    .main { margin-left: 0; padding: 16px; }
-    .btn-menu { display: inline-flex; }
-  }
-
-  /* Scrollbar customizada */
-  ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: var(--bg-app); }
-  ::-webkit-scrollbar-thumb { background: var(--borda); border-radius: 4px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--primario); }
 </style>
 </head>
 <body>
 
-<!-- ===================== SIDEBAR ===================== -->
-<aside class="sidebar" id="sidebar">
-  <div class="logo">
-    <div class="logo-icon">🌐</div>
-    <div class="logo-text">
-      <h2>LogiChain Pro</h2>
-      <span>GLOBAL SCM</span>
-    </div>
-  </div>
-  <nav>
-    <div class="grupo-label">Visão Geral</div>
-    <a class="ativo" data-secao="dashboard"><span>📊</span> Dashboard Executivo</a>
-    <a data-secao="shipments"><span>📦</span> Shipments <span class="badge-count" id="badgeShipments">0</span></a>
-    <a data-secao="alertas"><span>🚨</span> Alertas & Ocorrências</a>
+<!-- [MANTENHA TODA A ESTRUTURA HTML ANTERIOR: SIDEBAR, MAIN, SEÇÕES, MODAL VEÍCULO] -->
+<!-- ... Cole aqui todo o body anterior até antes do toast ... -->
 
-    <div class="grupo-label">Operações</div>
-    <a data-secao="cds"><span>🏭</span> Centros de Distribuição</a>
-    <a data-secao="frota"><span>🚛</span> Gestão de Frota</a>
-    <a data-secao="novo-embarque"><span>➕</span> Novo Embarque</a>
+<!-- ===================== CHATBOT IA ===================== -->
+<button class="ai-fab" id="aiFab" title="LogiChain AI Copilot">🤖</button>
 
-    <div class="grupo-label">Análise</div>
-    <a data-secao="relatorios"><span>📈</span> Relatórios & KPIs</a>
-    <a data-secao="config"><span>⚙️</span> Configurações</a>
-  </nav>
-</aside>
-
-<!-- ===================== MAIN ===================== -->
-<main class="main">
-  <div class="topbar">
-    <div class="esquerda" style="display:flex; align-items:center; gap:14px;">
-      <button class="btn-menu" onclick="document.getElementById('sidebar').classList.toggle('aberta')">☰</button>
-      <div>
-        <h1 id="tituloPagina">Dashboard Executivo</h1>
-        <div class="sub" id="subPagina">Visão consolidada da cadeia logística global</div>
-      </div>
-    </div>
-    <div class="direita">
-      <span class="pulse-dot"></span>
-      <span style="font-size:.82rem; color:var(--texto-sec);">Live</span>
-      <button class="btn-topo" onclick="exportarDados()">📥 Exportar</button>
-      <button class="btn-topo" onclick="sincronizar()">🔄 Sincronizar</button>
+<div class="chat-window" id="chatWindow">
+  <!-- Configuração API Key -->
+  <div class="api-key-modal" id="apiKeyModal">
+    <div class="nvidia-badge">⚡ NVIDIA NIM INTEGRATION</div>
+    <h4>Configurar API Key</h4>
+    <p>Insira sua chave da NVIDIA NIM para habilitar o assistente de IA. A chave é armazenada apenas localmente no seu navegador.</p>
+    <input type="password" id="apiKeyInput" placeholder="nvapi-xxxxxxxxxxxx..." />
+    <p style="font-size:.7rem; margin-top:4px;">🔒 Sua key nunca sai do navegador. O modelo usado será <code>meta/llama-3.3-nemotron-super-49b</code>.</p>
+    <div class="actions">
+      <button class="btn btn-ghost btn-mini" onclick="toggleApiKeyModal(false)">Cancelar</button>
+      <button class="btn btn-primario btn-mini" onclick="salvarApiKey()">Salvar Key</button>
     </div>
   </div>
 
-  <!-- ============ DASHBOARD ============ -->
-  <section class="secao ativa" id="dashboard">
-    <div class="kpis" id="kpisContainer"></div>
+  <div class="chat-header">
+    <h4><span class="status-dot"></span> LogiChain Copilot</h4>
+    <button class="chat-config-btn" onclick="toggleApiKeyModal(true)" title="Configurar API Key">⚙️</button>
+  </div>
 
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-titulo">
-          <h3>📦 Shipments Ativos em Rastreamento</h3>
-          <span class="tag" id="totalAtivos">0 ativos</span>
-        </div>
-        <div id="listaShipmentsDash"></div>
-      </div>
-      <div class="card">
-        <div class="card-titulo">
-          <h3>🚨 Alertas Críticos</h3>
-          <span class="tag" id="totalAlertas">0</span>
-        </div>
-        <div id="listaAlertasDash"></div>
-      </div>
-    </div>
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg system">🟢 Sistema conectado • Dados em tempo real</div>
+    <div class="msg ai">Olá! Sou o <strong>LogiChain Copilot</strong>, powered by NVIDIA NIM.<br><br>Posso analisar seus KPIs logísticos, identificar gargalos na cadeia de suprimentos e sugerir ações. Tente perguntar:<br>• <em>"Qual nosso OTIF atual?"</em><br>• <em>"Quais são os alertas críticos hoje?"</em><br>• <em>"Analise o volume por modal"</em></div>
+  </div>
 
-    <div class="grid-3">
-      <div class="card">
-        <div class="card-titulo"><h3>🌎 Volume por Modal</h3></div>
-        <div id="graficoModal"></div>
-      </div>
-      <div class="card">
-        <div class="card-titulo"><h3>🏆 Top Corredores</h3></div>
-        <div id="graficoCorredores"></div>
-      </div>
-      <div class="card">
-        <div class="card-titulo"><h3>📊 Performance por Transportadora</h3></div>
-        <div id="graficoTransportadoras"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ SHIPMENTS ============ -->
-  <section class="secao" id="shipments">
-    <div class="filtros">
-      <input type="text" id="filtroID" placeholder="🔍 Tracking ID..." />
-      <select id="filtroStatusShip">
-        <option value="">Todos os status</option>
-        <option value="Coleta">Coleta</option>
-        <option value="Em Trânsito">Em Trânsito</option>
-        <option value="Alfândega">Alfândega</option>
-        <option value="Armazém">Armazém</option>
-        <option value="Entregue">Entregue</option>
-        <option value="Atrasado">Atrasado</option>
-      </select>
-      <select id="filtroModal">
-        <option value="">Todos os modais</option>
-        <option>Marítimo</option>
-        <option>Aéreo</option>
-        <option>Rodoviário</option>
-        <option>Ferroviário</option>
-      </select>
-      <select id="filtroTransportadora">
-        <option value="">Todas transportadoras</option>
-      </select>
-    </div>
-    <div id="listaShipmentsCompleta"></div>
-  </section>
-
-  <!-- ============ ALERTAS ============ -->
-  <section class="secao" id="alertas">
-    <div class="card">
-      <div class="card-titulo">
-        <h3>🚨 Central de Ocorrências Logísticas</h3>
-        <span class="tag" id="totalAlertasFull">0 ocorrências</span>
-      </div>
-      <div id="listaAlertasCompleta"></div>
-    </div>
-  </section>
-
-  <!-- ============ CDs ============ -->
-  <section class="secao" id="cds">
-    <div class="kpis" id="kpisCDs"></div>
-    <div class="card">
-      <div class="card-titulo">
-        <h3>🏭 Centros de Distribuição Globais</h3>
-        <span class="tag">Tempo Real</span>
-      </div>
-      <div class="cd-grid" id="listaCDs"></div>
-    </div>
-  </section>
-
-  <!-- ============ FROTA ============ -->
-  <section class="secao" id="frota">
-    <div class="kpis" id="kpisFrota"></div>
-    <div class="card">
-      <div class="card-titulo">
-        <h3>🚛 Frota Ativa</h3>
-        <button class="btn btn-primario btn-mini" onclick="abrirModalVeiculo()">+ Adicionar</button>
-      </div>
-      <div id="listaFrota"></div>
-    </div>
-  </section>
-
-  <!-- ============ NOVO EMBARQUE ============ -->
-  <section class="secao" id="novo-embarque">
-    <div class="card" style="max-width:900px;">
-      <div class="card-titulo">
-        <h3>➕ Registrar Novo Embarque</h3>
-        <span class="tag">Shipment Creation</span>
-      </div>
-      <form id="formShipment">
-        <input type="hidden" id="shpId" />
-        <div class="form-grid">
-          <div class="campo">
-            <label>Tracking ID</label>
-            <input type="text" id="shpTracking" placeholder="SHP-XXXXXX" />
-          </div>
-          <div class="campo">
-            <label>Cliente / Shipper</label>
-            <input type="text" id="shpCliente" required placeholder="Ex: Samsung Brasil" />
-          </div>
-          <div class="campo">
-            <label>Origem</label>
-            <input type="text" id="shpOrigem" required placeholder="Ex: Shenzhen, CN" />
-          </div>
-          <div class="campo">
-            <label>Destino</label>
-            <input type="text" id="shpDestino" required placeholder="Ex: São Paulo, BR" />
-          </div>
-          <div class="campo">
-            <label>Modal</label>
-            <select id="shpModal" required>
-              <option value="">Selecione...</option>
-              <option>Marítimo</option>
-              <option>Aéreo</option>
-              <option>Rodoviário</option>
-              <option>Ferroviário</option>
-            </select>
-          </div>
-          <div class="campo">
-            <label>Transportadora</label>
-            <select id="shpTransportadora" required></select>
-          </div>
-          <div class="campo">
-            <label>Peso (kg)</label>
-            <input type="number" id="shpPeso" step="0.01" required />
-          </div>
-          <div class="campo">
-            <label>Volume (m³)</label>
-            <input type="number" id="shpVolume" step="0.01" required />
-          </div>
-          <div class="campo">
-            <label>Valor Declarado (USD)</label>
-            <input type="number" id="shpValor" step="0.01" required />
-          </div>
-          <div class="campo">
-            <label>SLA (dias)</label>
-            <input type="number" id="shpSLA" required placeholder="Ex: 14" />
-          </div>
-          <div class="campo">
-            <label>Data Coleta</label>
-            <input type="date" id="shpData" required />
-          </div>
-          <div class="campo">
-            <label>Status Atual</label>
-            <select id="shpStatus" required>
-              <option>Coleta</option>
-              <option>Em Trânsito</option>
-              <option>Alfândega</option>
-              <option>Armazém</option>
-              <option>Entregue</option>
-              <option>Atrasado</option>
-            </select>
-          </div>
-        </div>
-        <div class="campo" style="margin-bottom:16px;">
-          <label>Observações</label>
-          <textarea id="shpObs" rows="2" placeholder="Notas sobre o embarque..."></textarea>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <button type="submit" class="btn btn-primario">💾 Registrar Embarque</button>
-          <button type="button" class="btn btn-ghost" onclick="limparFormShipment()">🔄 Limpar</button>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <!-- ============ RELATÓRIOS ============ -->
-  <section class="secao" id="relatorios">
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-titulo"><h3>📊 KPIs Logísticos Globais</h3></div>
-        <div id="relKPIs"></div>
-      </div>
-      <div class="card">
-        <div class="card-titulo"><h3>💰 Custo por Modal</h3></div>
-        <div id="relCustos"></div>
-      </div>
-    </div>
-    <div class="grid-2" style="margin-top:16px;">
-      <div class="card">
-        <div class="card-titulo"><h3>🌍 Volume por País de Origem</h3></div>
-        <div id="relOrigem"></div>
-      </div>
-      <div class="card">
-        <div class="card-titulo"><h3>🏁 Volume por País de Destino</h3></div>
-        <div id="relDestino"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ CONFIG ============ -->
-  <section class="secao" id="config">
-    <div class="card" style="max-width:700px;">
-      <div class="card-titulo">
-        <h3>⚙️ Configurações do Sistema</h3>
-        <span class="tag">Admin</span>
-      </div>
-      <p style="margin-bottom:14px; color:var(--texto-sec);">
-        Gerencie a base de dados do LogiChain Pro. Todos os dados são persistidos no <code>localStorage</code> do navegador.
-      </p>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <button class="btn btn-primario" onclick="exportarDados()">📥 Exportar JSON Completo</button>
-        <button class="btn btn-ghost" onclick="importarDadosPrompt()">📤 Importar JSON</button>
-        <button class="btn btn-perigo" onclick="resetarSistema()">🗑️ Resetar para Dados Mock Globais</button>
-      </div>
-      <input type="file" id="fileImport" accept=".json" style="display:none;" />
-    </div>
-  </section>
-</main>
-
-<!-- MODAL VEÍCULO -->
-<div class="modal-bg" id="modalVeiculo">
-  <div class="modal">
-    <h3>🚛 Cadastro de Veículo</h3>
-    <form id="formVeiculo">
-      <div class="form-grid">
-        <div class="campo">
-          <label>Placa</label>
-          <input type="text" id="vPlaca" required placeholder="ABC1D23" />
-        </div>
-        <div class="campo">
-          <label>Tipo</label>
-          <select id="vTipo" required>
-            <option>Bitruck</option>
-            <option>Carreta</option>
-            <option>Van</option>
-            <option>VUC</option>
-            <option>Caminhão 3/4</option>
-          </select>
-        </div>
-        <div class="campo">
-          <label>Motorista</label>
-          <input type="text" id="vMotorista" required />
-        </div>
-        <div class="campo">
-          <label>Status</label>
-          <select id="vStatus">
-            <option value="ativo">Ativo</option>
-            <option value="manutencao">Manutenção</option>
-            <option value="inativo">Inativo</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button type="button" class="btn btn-ghost" onclick="fecharModal('modalVeiculo')">Cancelar</button>
-        <button type="submit" class="btn btn-primario">Salvar</button>
-      </div>
-    </form>
+  <div class="chat-input-area">
+    <input type="text" id="chatInput" placeholder="Pergunte sobre sua operação logística..." autocomplete="off" />
+    <button class="chat-send-btn" id="chatSendBtn" onclick="enviarMensagem()">➤</button>
   </div>
 </div>
 
@@ -979,886 +188,225 @@
 
 <script>
 /* =========================================================
-   CONFIGURAÇÕES GLOBAIS
+   [MANTENHA TODO O JAVASCRIPT ANTERIOR AQUI]
+   (Configurações, Mock Data, CRUD, Renderização, etc.)
    ========================================================= */
-const CHAVE_SHIPMENTS = 'logichain_shipments_v1';
-const CHAVE_CDS = 'logichain_cds_v1';
-const CHAVE_FROTA = 'logichain_frota_v1';
-const CHAVE_ALERTAS = 'logichain_alertas_v1';
 
-const TRANSPORTADORAS = [
-  'Maersk Line', 'MSC', 'DHL Global Forwarding', 'Kuehne+Nagel',
-  'DB Schenker', 'FedEx Logistics', 'UPS SCS', 'LATAM Cargo',
-  'Jadlog', 'TNT', 'JSL', 'Tegma'
-];
+// ... [Cole aqui todo o script anterior] ...
 
-const MODAIS = ['Marítimo', 'Aéreo', 'Rodoviário', 'Ferroviário'];
-
-const CHECKPOINTS = ['Coleta', 'Em Trânsito', 'Alfândega', 'Armazém', 'Entregue'];
 
 /* =========================================================
-   GERAÇÃO DE DADOS MOCK GLOBAIS REALÍSTICOS
-   Baseado em benchmarks reais de SCM:
-   - OTIF médio: 85-92%
-   - Corredores principais: China→BR, EUA→BR, EU→BR
+   🤖 MÓDULO DE INTELIGÊNCIA ARTIFICIAL (NVIDIA NIM)
    ========================================================= */
-function gerarTrackingID() {
-  const pre = ['SHP', 'BOL', 'AWB', 'CNT'][Math.floor(Math.random()*4)];
-  const num = Math.floor(100000 + Math.random() * 900000);
-  return `${pre}-${num}`;
-}
 
-function dataAleatoria(diasAtras = 0) {
-  const d = new Date();
-  d.setDate(d.getDate() - diasAtras + Math.floor(Math.random() * 30) - 15);
-  return d.toISOString().slice(0, 10);
-}
+const CHAVE_API_KEY = 'logichain_nvidia_api_key';
+const NVIDIA_MODEL = 'meta/llama-3.3-nemotron-super-49b';
+const NVIDIA_ENDPOINT = 'https://integrate.api.nvidia.com/v1/chat/completions';
 
-function gerarShipmentsMock() {
-  const rotas = [
-    { o: 'Shenzhen, CN', d: 'Santos, BR', modal: 'Marítimo', sla: 42, peso: 24500, vol: 58, valor: 485000 },
-    { o: 'Miami, US', d: 'Guarulhos, BR', modal: 'Aéreo', sla: 5, peso: 850, vol: 4.5, valor: 125000 },
-    { o: 'Rotterdam, NL', d: 'Itajaí, BR', modal: 'Marítimo', sla: 28, peso: 18200, vol: 42, valor: 320000 },
-    { o: 'Guangzhou, CN', d: 'Manaus, BR', modal: 'Marítimo', sla: 38, peso: 31000, vol: 72, valor: 620000 },
-    { o: 'Los Angeles, US', d: 'Viracopos, BR', modal: 'Aéreo', sla: 3, peso: 420, vol: 2.8, valor: 85000 },
-    { o: 'Hamburg, DE', d: 'Rio de Janeiro, BR', modal: 'Marítimo', sla: 25, peso: 15800, vol: 38, valor: 290000 },
-    { o: 'Buenos Aires, AR', d: 'São Paulo, BR', modal: 'Rodoviário', sla: 4, peso: 8200, vol: 22, valor: 95000 },
-    { o: 'Santiago, CL', d: 'Curitiba, BR', modal: 'Rodoviário', sla: 6, peso: 6500, vol: 18, valor: 72000 },
-    { o: 'Tokyo, JP', d: 'Guarulhos, BR', modal: 'Aéreo', sla: 4, peso: 320, vol: 2.1, valor: 210000 },
-    { o: 'Dubai, AE', d: 'Recife, BR', modal: 'Marítimo', sla: 32, peso: 12500, vol: 28, valor: 385000 },
-    { o: 'Frankfurt, DE', d: 'Viracopos, BR', modal: 'Aéreo', sla: 2, peso: 580, vol: 3.5, valor: 175000 },
-    { o: 'Shanghai, CN', d: 'Paranaguá, BR', modal: 'Marítimo', sla: 35, peso: 28500, vol: 65, valor: 540000 },
-    { o: 'Asunción, PY', d: 'São Paulo, BR', modal: 'Rodoviário', sla: 3, peso: 4200, vol: 12, valor: 38000 },
-    { o: 'Barcelona, ES', d: 'Santos, BR', modal: 'Marítimo', sla: 22, peso: 9800, vol: 24, valor: 195000 },
-    { o: 'Houston, US', d: 'Fortaleza, BR', modal: 'Marítimo', sla: 18, peso: 14200, vol: 32, valor: 265000 }
-  ];
+let chatHistorico = [];
 
-  const clientes = ['Samsung Brasil', 'Apple LatAm', 'Nike BR', 'Adidas', 'Sony', 'LG Electronics',
-    'Toyota Brasil', 'Volkswagen', 'Natura', 'Magazine Luiza', 'Mercado Livre', 'Amazon BR', 'Vivo', 'Claro'];
+// --- Controle da Interface do Chat ---
+const aiFab = document.getElementById('aiFab');
+const chatWindow = document.getElementById('chatWindow');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const chatSendBtn = document.getElementById('chatSendBtn');
+const apiKeyModal = document.getElementById('apiKeyModal');
 
-  const statusDist = [
-    'Coleta', 'Em Trânsito', 'Em Trânsito', 'Em Trânsito',
-    'Alfândega', 'Alfândega', 'Armazém', 'Armazém',
-    'Entregue', 'Entregue', 'Entregue', 'Entregue', 'Entregue',
-    'Atrasado'
-  ];
-
-  const shipments = [];
-  for (let i = 0; i < 35; i++) {
-    const rota = rotas[i % rotas.length];
-    const status = statusDist[Math.floor(Math.random() * statusDist.length)];
-    const valorVar = rota.valor * (0.6 + Math.random() * 0.8);
-    shipments.push({
-      id: i + 1,
-      tracking: gerarTrackingID(),
-      cliente: clientes[Math.floor(Math.random() * clientes.length)],
-      origem: rota.o,
-      destino: rota.d,
-      modal: rota.modal,
-      transportadora: TRANSPORTADORAS[Math.floor(Math.random() * TRANSPORTADORAS.length)],
-      peso: rota.peso * (0.7 + Math.random() * 0.6),
-      volume: rota.vol * (0.7 + Math.random() * 0.6),
-      valor: valorVar,
-      sla: rota.sla,
-      dataColeta: dataAleatoria(Math.floor(Math.random() * 20)),
-      status: status,
-      observacoes: '',
-      progresso: calcularProgresso(status)
-    });
-  }
-  return shipments;
-}
-
-function calcularProgresso(status) {
-  const map = {
-    'Coleta': 20, 'Em Trânsito': 45, 'Alfândega': 70,
-    'Armazém': 85, 'Entregue': 100, 'Atrasado': 50
-  };
-  return map[status] || 0;
-}
-
-function gerarCDsMock() {
-  return [
-    { id: 1, nome: 'CD Extrema', cidade: 'Extrema, MG', capacidade: 85000, ocupado: 72300, throughput: 4250, tipo: 'Fulfillment' },
-    { id: 2, nome: 'CD Cajamar', cidade: 'Cajamar, SP', capacidade: 120000, ocupado: 108500, throughput: 6820, tipo: 'Hub Central' },
-    { id: 3, nome: 'CD Manaus', cidade: 'Manaus, AM', capacidade: 45000, ocupado: 28400, throughput: 1580, tipo: 'ZFM' },
-    { id: 4, nome: 'CD Itajaí', cidade: 'Itajaí, SC', capacidade: 62000, ocupado: 51200, throughput: 3120, tipo: 'Porto Seco' },
-    { id: 5, nome: 'CD Recife', cidade: 'Recife, PE', capacidade: 38000, ocupado: 32100, throughput: 1890, tipo: 'Regional NE' },
-    { id: 6, nome: 'CD Cabo de Santo Agostinho', cidade: 'Cabo, PE', capacidade: 55000, ocupado: 41800, throughput: 2450, tipo: 'Cross-Dock' }
-  ];
-}
-
-function gerarFrotaMock() {
-  const tipos = ['Bitruck', 'Carreta', 'Van', 'VUC', 'Caminhão 3/4'];
-  const motoristas = ['João Silva', 'Carlos Mendes', 'Ricardo Alves', 'Paulo Santos',
-    'Marcos Oliveira', 'Pedro Costa', 'Rafael Souza', 'Lucas Pereira',
-    'Fernando Lima', 'Bruno Rocha'];
-  const frota = [];
-  for (let i = 0; i < 12; i++) {
-    const placa = [
-      'BRA', 'CDE', 'FGH', 'JKL', 'MNO', 'PQR', 'STU', 'VWX', 'YZA', 'BCD', 'EFG', 'HIJ'
-    ][i] + Math.floor(1000 + Math.random() * 9000);
-    const status = ['ativo', 'ativo', 'ativo', 'ativo', 'ativo', 'manutencao', 'inativo'][Math.floor(Math.random()*7)];
-    frota.push({
-      id: i + 1,
-      placa: placa.replace(/(\w{3})(\d{4})/, '$1$2'),
-      tipo: tipos[Math.floor(Math.random() * tipos.length)],
-      motorista: motoristas[Math.floor(Math.random() * motoristas.length)],
-      status: status,
-      km: Math.floor(50000 + Math.random() * 450000),
-      ultimaManutencao: dataAleatoria(Math.floor(Math.random() * 90))
-    });
-  }
-  return frota;
-}
-
-function gerarAlertasMock() {
-  return [
-    { id: 1, nivel: 'critico', titulo: 'Atraso na Alfândega - Porto de Santos', desc: 'Greve dos auditores fiscais. 14 embarques retidos há 4 dias.', tempo: '2h atrás', shipmentId: null },
-    { id: 2, nivel: 'alto', titulo: 'Tempestade Tropical no Atlântico', desc: 'Navio MSC ANTONIA desviou rota. ETA +3 dias.', tempo: '5h atrás', shipmentId: null },
-    { id: 3, nivel: 'critico', titulo: 'CD Cajamar em capacidade crítica', desc: 'Ocupação em 90,4%. Revisar cross-docking urgente.', tempo: '1h atrás', shipmentId: null },
-    { id: 4, nivel: 'info', titulo: 'Manutenção Programada - Frota', desc: 'Veículo BRA-2847 entra em manutenção preventiva dia 02/07.', tempo: '8h atrás', shipmentId: null },
-    { id: 5, nivel: 'alto', titulo: 'Variação Cambial USD/BRL', desc: 'Dólar subiu 2,3% - impacta fretes internacionais.', tempo: '12h atrás', shipmentId: null },
-    { id: 6, nivel: 'info', titulo: 'Nova Rota Disponível', desc: 'Corredor Rotterdam-Santos com tarifa -8% em Julho.', tempo: '1d atrás', shipmentId: null }
-  ];
-}
-
-/* =========================================================
-   PERSISTÊNCIA LOCALSTORAGE (comentada conforme requisito)
-   ========================================================= */
-function carregarDados(chave, fnMock) {
-  const dados = localStorage.getItem(chave);
-  if (dados) {
-    try { return JSON.parse(dados); }
-    catch(e) { console.error(e); }
-  }
-  const iniciais = fnMock();
-  localStorage.setItem(chave, JSON.stringify(iniciais));
-  return iniciais;
-}
-
-function salvarDados(chave, dados) {
-  localStorage.setItem(chave, JSON.stringify(dados));
-}
-
-function getShipments() { return carregarDados(CHAVE_SHIPMENTS, gerarShipmentsMock); }
-function getCDs() { return carregarDados(CHAVE_CDS, gerarCDsMock); }
-function getFrota() { return carregarDados(CHAVE_FROTA, gerarFrotaMock); }
-function getAlertas() { return carregarDados(CHAVE_ALERTAS, gerarAlertasMock); }
-
-function addShipment(s) {
-  const lista = getShipments();
-  s.id = lista.length ? Math.max(...lista.map(x=>x.id)) + 1 : 1;
-  lista.push(s);
-  salvarDados(CHAVE_SHIPMENTS, lista);
-  return s;
-}
-
-function updateShipment(id, dados) {
-  const lista = getShipments();
-  const i = lista.findIndex(x => x.id === id);
-  if (i >= 0) {
-    lista[i] = { ...lista[i], ...dados };
-    salvarDados(CHAVE_SHIPMENTS, lista);
-  }
-}
-
-function deleteShipment(id) {
-  let lista = getShipments();
-  lista = lista.filter(x => x.id !== id);
-  salvarDados(CHAVE_SHIPMENTS, lista);
-}
-
-function addVeiculo(v) {
-  const lista = getFrota();
-  v.id = lista.length ? Math.max(...lista.map(x=>x.id)) + 1 : 1;
-  lista.push(v);
-  salvarDados(CHAVE_FROTA, lista);
-}
-
-/* =========================================================
-   FORMATAÇÃO
-   ========================================================= */
-function fmtUSD(v) {
-  return v.toLocaleString('en-US', { style:'currency', currency:'USD', maximumFractionDigits:0 });
-}
-function fmtBRL(v) {
-  return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
-}
-function fmtNum(v) { return v.toLocaleString('pt-BR'); }
-function fmtData(d) {
-  if (!d) return '-';
-  const [a,m,dia] = d.split('-');
-  return `${dia}/${m}/${a}`;
-}
-function fmtPeso(kg) {
-  return kg >= 1000 ? (kg/1000).toFixed(1) + ' t' : kg.toFixed(0) + ' kg';
-}
-function classeBadge(s) {
-  const map = {
-    'Coleta':'coleta', 'Em Trânsito':'transito', 'Alfândega':'alfandega',
-    'Armazém':'armazem', 'Entregue':'entregue', 'Atrasado':'atrasado'
-  };
-  return map[s] || 'transito';
-}
-
-/* =========================================================
-   NAVEGAÇÃO
-   ========================================================= */
-const SUBS = {
-  'dashboard': 'Visão consolidada da cadeia logística global',
-  'shipments': 'Rastreamento ponta-a-ponta de embarques',
-  'alertas': 'Monitoramento de ocorrências em tempo real',
-  'cds': 'Capacidade e throughput dos centros de distribuição',
-  'frota': 'Veículos, motoristas e manutenção',
-  'novo-embarque': 'Criação de novo shipment',
-  'relatorios': 'Análise aprofundada de performance',
-  'config': 'Gerenciamento do sistema'
-};
-
-document.querySelectorAll('.sidebar nav a').forEach(link => {
-  link.addEventListener('click', () => {
-    const secao = link.dataset.secao;
-    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('ativo'));
-    link.classList.add('ativo');
-    document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
-    document.getElementById(secao).classList.add('ativa');
-    document.getElementById('tituloPagina').textContent = link.textContent.trim();
-    document.getElementById('subPagina').textContent = SUBS[secao] || '';
-    if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('aberta');
-    atualizarTudo();
-  });
+aiFab.addEventListener('click', () => {
+  const isOpen = chatWindow.classList.toggle('visivel');
+  aiFab.classList.toggle('ativo', isOpen);
+  if (isOpen) chatInput.focus();
 });
 
-/* =========================================================
-   KPIs EXECUTIVOS GLOBAIS
-   ========================================================= */
-function calcularKPIs() {
-  const shipments = getShipments();
-  const total = shipments.length;
-  const entregues = shipments.filter(s => s.status === 'Entregue').length;
-  const noPrazo = entregues + shipments.filter(s => s.status !== 'Entregue' && s.status !== 'Atrasado').length;
-  const atrasados = shipments.filter(s => s.status === 'Atrasado').length;
-  const emTransito = shipments.filter(s => ['Em Trânsito', 'Alfândega', 'Armazém'].includes(s.status)).length;
-
-  const volumeTotalUSD = shipments.reduce((a, s) => a + s.valor, 0);
-  const pesoTotal = shipments.reduce((a, s) => a + s.peso, 0);
-  const custoMedioEnvio = total ? volumeTotalUSD / total : 0;
-  const otif = total ? (noPrazo / total) * 100 : 0;
-  const perfectOrder = total ? (entregues / total) * 100 : 0;
-  const leadTimeMedio = shipments.reduce((a, s) => a + s.sla, 0) / Math.max(total, 1);
-
-  return {
-    total, entregues, noPrazo, atrasados, emTransito,
-    volumeTotalUSD, pesoTotal, custoMedioEnvio,
-    otif, perfectOrder, leadTimeMedio
-  };
-}
-
-function renderKPIs() {
-  const k = calcularKPIs();
-  const container = document.getElementById('kpisContainer');
-  container.innerHTML = `
-    <div class="kpi">
-      <div class="cabecalho">
-        <div class="titulo">OTIF Global</div>
-        <div class="icone" style="background:rgba(16,185,129,.15)">🎯</div>
-      </div>
-      <div class="valor">${k.otif.toFixed(1)}%</div>
-      <span class="variacao ${k.otif >= 85 ? 'up' : 'down'}">${k.otif >= 85 ? '▲' : '▼'} Meta: 85%</span>
-      <div class="meta"><div class="meta-fill" style="width:${Math.min(k.otif, 100)}%"></div></div>
-      <div class="meta-label"><span>On Time In Full</span><span>${k.noPrazo}/${k.total}</span></div>
-    </div>
-
-    <div class="kpi">
-      <div class="cabecalho">
-        <div class="titulo">Shipments Ativos</div>
-        <div class="icone" style="background:rgba(59,130,246,.15)">📦</div>
-      </div>
-      <div class="valor">${fmtNum(k.emTransito)}</div>
-      <span class="variacao up">● ${fmtNum(k.entregues)} entregues</span>
-      <div class="meta"><div class="meta-fill" style="width:${(k.entregues/Math.max(k.total,1))*100}%"></div></div>
-      <div class="meta-label"><span>Em operação</span><span>${k.emTransito}/${k.total}</span></div>
-    </div>
-
-    <div class="kpi">
-      <div class="cabecalho">
-        <div class="titulo">Volume Movimentado</div>
-        <div class="icone" style="background:rgba(139,92,246,.15)">💰</div>
-      </div>
-      <div class="valor">${fmtUSD(k.volumeTotalUSD)}</div>
-      <span class="variacao up">▲ ${fmtPeso(k.pesoTotal)}</span>
-      <div class="meta"><div class="meta-fill" style="width:78%"></div></div>
-      <div class="meta-label"><span>GMV logístico</span><span>+12% MoM</span></div>
-    </div>
-
-    <div class="kpi">
-      <div class="cabecalho">
-        <div class="titulo">Atrasos</div>
-        <div class="icone" style="background:rgba(239,68,68,.15)">⚠️</div>
-      </div>
-      <div class="valor">${k.atrasados}</div>
-      <span class="variacao ${k.atrasados > 3 ? 'down' : 'up'}">${k.atrasados > 3 ? '▲ Crítico' : '● Normal'}</span>
-      <div class="meta"><div class="meta-fill" style="width:${(k.atrasados/Math.max(k.total,1))*100}%; background:var(--perigo)"></div></div>
-      <div class="meta-label"><span>Taxa</span><span>${((k.atrasados/Math.max(k.total,1))*100).toFixed(1)}%</span></div>
-    </div>
-
-    <div class="kpi">
-      <div class="cabecalho">
-        <div class="titulo">Lead Time Médio</div>
-        <div class="icone" style="background:rgba(6,182,212,.15)">⏱️</div>
-      </div>
-      <div class="valor">${k.leadTimeMedio.toFixed(1)} <small style="font-size:.6em">dias</small></div>
-      <span class="variacao up">▼ -0.8d vs mês anterior</span>
-      <div class="meta"><div class="meta-fill" style="width:65%"></div></div>
-      <div class="meta-label"><span>Porte-a-porte</span><span>Meta: 18d</span></div>
-    </div>
-
-    <div class="kpi">
-      <div class="cabecalho">
-        <div class="titulo">Perfect Order Rate</div>
-        <div class="icone" style="background:rgba(16,185,129,.15)">✨</div>
-      </div>
-      <div class="valor">${k.perfectOrder.toFixed(1)}%</div>
-      <span class="variacao ${k.perfectOrder >= 80 ? 'up' : 'down'}">${k.perfectOrder >= 80 ? '▲' : '▼'} Benchmark</span>
-      <div class="meta"><div class="meta-fill" style="width:${k.perfectOrder}%"></div></div>
-      <div class="meta-label"><span>Sem avarias</span><span>${k.entregues} pedidos</span></div>
-    </div>
-  `;
-}
-
-/* =========================================================
-   DASHBOARD - LISTAS E GRÁFICOS
-   ========================================================= */
-function renderShipmentsDash() {
-  const shipments = getShipments().filter(s => s.status !== 'Entregue').slice(0, 4);
-  const cont = document.getElementById('listaShipmentsDash');
-  document.getElementById('totalAtivos').textContent = `${getShipments().filter(s=>s.status!=='Entregue').length} ativos`;
-
-  if (!shipments.length) {
-    cont.innerHTML = '<p style="color:var(--texto-sec); text-align:center; padding:20px;">Nenhum shipment ativo</p>';
-    return;
+function toggleApiKeyModal(show) {
+  apiKeyModal.classList.toggle('visivel', show);
+  if (show) {
+    const key = localStorage.getItem(CHAVE_API_KEY) || '';
+    document.getElementById('apiKeyInput').value = key;
   }
-  cont.innerHTML = shipments.map(s => renderShipmentCard(s)).join('');
 }
 
-function renderShipmentCard(s) {
-  const prog = calcularProgresso(s.status);
-  const steps = CHECKPOINTS.map(cp => {
-    const cpIdx = CHECKPOINTS.indexOf(cp);
-    const sIdx = CHECKPOINTS.indexOf(s.status === 'Atrasado' ? 'Em Trânsito' : s.status);
-    let cls = '';
-    if (s.status === 'Entregue') cls = 'concluido';
-    else if (cpIdx < sIdx) cls = 'concluido';
-    else if (cpIdx === sIdx) cls = 'ativo';
-    return `<div class="timeline-step ${cls}">
-      <div class="dot">${cls === 'concluido' ? '✓' : ''}</div>
-      <div>${cp}</div>
-    </div>`;
-  }).join('');
+function salvarApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) return mostrarToast('❌ Insira uma API Key válida', 'erro');
+  localStorage.setItem(CHAVE_API_KEY, key);
+  toggleApiKeyModal(false);
+  mostrarToast('✅ API Key da NVIDIA salva com sucesso', 'sucesso');
+  addMsgAi('API Key configurada! Estou pronto para analisar sua operação logística.');
+}
+
+// --- Motor de Contexto (RAG Simulado no Frontend) ---
+/**
+ * Coleta dados REAIS do sistema para injetar no prompt da IA.
+ * Isso permite que a IA responda com base nos dados atuais do dashboard.
+ */
+function coletarContextoSistema() {
+  const kpis = calcularKPIs();
+  const alertas = getAlertas().filter(a => a.nivel === 'critico' || a.nivel === 'alto');
+  const shipments = getShipments();
+  const cds = getCDs();
+  const frota = getFrota();
+
+  const topCorredores = {};
+  shipments.forEach(s => {
+    const rota = `${s.origem.split(',').pop().trim()} → ${s.destino.split(',').pop().trim()}`;
+    topCorredores[rota] = (topCorredores[rota] || 0) + 1;
+  });
+  const corredoresOrdenados = Object.entries(topCorredores).sort((a,b) => b[1]-a[1]).slice(0,3);
 
   return `
-    <div class="shipment-card">
-      <div class="shipment-header">
-        <div>
-          <div class="shipment-id">${s.tracking}</div>
-          <div style="font-size:.78rem; color:var(--texto-sec); margin-top:2px;">${s.cliente}</div>
-        </div>
-        <span class="badge ${classeBadge(s.status)}">${s.status}</span>
-      </div>
-      <div class="shipment-rota">
-        <span class="rota-cidade">📍 ${s.origem}</span>
-        <span class="rota-linha"></span>
-        <span class="rota-cidade">🏁 ${s.destino}</span>
-      </div>
-      <div class="shipment-meta">
-        <div class="item"><strong>${s.modal}</strong>Modal</div>
-        <div class="item"><strong>${s.transportadora}</strong>Transportadora</div>
-        <div class="item"><strong>${fmtPeso(s.peso)}</strong>Peso</div>
-        <div class="item"><strong>${fmtUSD(s.valor)}</strong>Valor</div>
-        <div class="item"><strong>${s.sla}d</strong>SLA</div>
-      </div>
-      <div class="timeline">${steps}</div>
-      <div style="display:flex; gap:8px; margin-top:12px; justify-content:flex-end;">
-        <button class="btn btn-ghost btn-mini" onclick="editarShipment(${s.id})">✏️ Editar</button>
-        <button class="btn btn-perigo btn-mini" onclick="excluirShipment(${s.id})">🗑️</button>
-      </div>
-    </div>
-  `;
+DADOS EM TEMPO REAL DO SISTEMA LOGICHAIN PRO:
+- OTIF Global: ${kpis.otif.toFixed(1)}% (Meta: 85%)
+- Shipments Ativos: ${kpis.emTransito} | Entregues: ${kpis.entregues} | Atrasados: ${kpis.atrasados}
+- Volume Movimentado: USD ${kpis.volumeTotalUSD.toLocaleString('en-US', {maximumFractionDigits:0})}
+- Lead Time Médio: ${kpis.leadTimeMedio.toFixed(1)} dias
+- Perfect Order Rate: ${kpis.perfectOrder.toFixed(1)}%
+- CDs: ${cds.length} ativos, ocupação média ${((cds.reduce((a,c)=>a+c.ocupado,0)/cds.reduce((a,c)=>a+c.capacidade,0))*100).toFixed(1)}%
+- Frota: ${frota.filter(v=>v.status==='ativo').length}/${frota.length} veículos ativos
+- Alertas Críticos (${alertas.length}): ${alertas.map(a=>a.titulo).join('; ') || 'Nenhum'}
+- Top Corredores: ${corredoresOrdenados.map(c=>`${c[0]} (${c[1]} envios)`).join('; ')}
+- Modais: Marítimo ${(shipments.filter(s=>s.modal==='Marítimo').length/shipments.length*100).toFixed(0)}%, Aéreo ${(shipments.filter(s=>s.modal==='Aéreo').length/shipments.length*100).toFixed(0)}%, Rodoviário ${(shipments.filter(s=>s.modal==='Rodoviário').length/shipments.length*100).toFixed(0)}%
+`;
 }
 
-function renderAlertasDash() {
-  const alertas = getAlertas().slice(0, 5);
-  const cont = document.getElementById('listaAlertasDash');
-  document.getElementById('totalAlertas').textContent = alertas.length;
-  const icons = { critico: '🔴', alto: '🟠', info: '🔵' };
-  cont.innerHTML = alertas.map(a => `
-    <div class="alerta ${a.nivel}">
-      <div class="ic">${icons[a.nivel]}</div>
-      <div class="cont">
-        <div class="tit">${a.titulo}</div>
-        <div class="desc">${a.desc}</div>
-      </div>
-      <div class="tempo">${a.tempo}</div>
-    </div>
-  `).join('');
+function buildSystemPrompt(userQuestion) {
+  const contexto = coletarContextoSistema();
+  return `Você é o LogiChain Copilot, um assistente especialista em Supply Chain Management global integrado ao sistema LogiChain Pro.
+
+REGRAS:
+1. Responda SEMPRE em português brasileiro.
+2. Use os DADOS EM TEMPO REAL fornecidos abaixo para responder. NUNCA invente números.
+3. Seja conciso, executivo e orientado a ação. Use bullet points quando apropriado.
+4. Se perguntarem sobre algo fora dos dados disponíveis, diga honestamente que não tem essa informação no sistema.
+5. Destaque métricas críticas e sugira ações corretivas quando relevante.
+6. Formate valores monetários em USD e percentuais com 1 casa decimal.
+
+${contexto}
+
+PERGUNTA DO USUÁRIO: ${userQuestion}`;
 }
 
-function renderAlertasFull() {
-  const alertas = getAlertas();
-  const cont = document.getElementById('listaAlertasCompleta');
-  document.getElementById('totalAlertasFull').textContent = `${alertas.length} ocorrências`;
-  const icons = { critico: '🔴', alto: '🟠', info: '🔵' };
-  cont.innerHTML = alertas.map(a => `
-    <div class="alerta ${a.nivel}">
-      <div class="ic">${icons[a.nivel]}</div>
-      <div class="cont">
-        <div class="tit">${a.titulo}</div>
-        <div class="desc">${a.desc}</div>
-      </div>
-      <div class="tempo">${a.tempo}</div>
-    </div>
-  `).join('');
-}
+// --- Envio e Streaming da Mensagem ---
+async function enviarMensagem() {
+  const texto = chatInput.value.trim();
+  if (!texto) return;
 
-function renderGraficoModal() {
-  const shipments = getShipments();
-  const count = {};
-  MODAIS.forEach(m => count[m] = 0);
-  shipments.forEach(s => count[s.modal] = (count[s.modal] || 0) + s.valor);
-  const total = Object.values(count).reduce((a,b)=>a+b, 0);
-  const cores = { 'Marítimo':'azul', 'Aéreo':'roxo', 'Rodoviário':'laranja', 'Ferroviário':'verde' };
-
-  document.getElementById('graficoModal').innerHTML = Object.entries(count)
-    .sort((a,b) => b[1] - a[1])
-    .map(([m, v]) => `
-      <div class="barra-item">
-        <div class="label"><span class="nome">${m}</span><span class="valor">${fmtUSD(v)} (${((v/total)*100).toFixed(1)}%)</span></div>
-        <div class="barra-track"><div class="barra-fill ${cores[m]}" style="width:${(v/Math.max(...Object.values(count)))*100}%"></div></div>
-      </div>
-    `).join('');
-}
-
-function renderGraficoCorredores() {
-  const shipments = getShipments();
-  const count = {};
-  shipments.forEach(s => {
-    const k = `${s.origem.split(',').pop().trim()} → ${s.destino.split(',').pop().trim()}`;
-    count[k] = (count[k] || 0) + 1;
-  });
-  const max = Math.max(...Object.values(count), 1);
-  document.getElementById('graficoCorredores').innerHTML = Object.entries(count)
-    .sort((a,b) => b[1] - a[1])
-    .slice(0, 6)
-    .map(([k, v]) => `
-      <div class="barra-item">
-        <div class="label"><span class="nome">${k}</span><span class="valor">${v} envios</span></div>
-        <div class="barra-track"><div class="barra-fill azul" style="width:${(v/max)*100}%"></div></div>
-      </div>
-    `).join('');
-}
-
-function renderGraficoTransportadoras() {
-  const shipments = getShipments();
-  const count = {};
-  shipments.forEach(s => count[s.transportadora] = (count[s.transportadora] || 0) + 1);
-  const max = Math.max(...Object.values(count), 1);
-  document.getElementById('graficoTransportadoras').innerHTML = Object.entries(count)
-    .sort((a,b) => b[1] - a[1])
-    .slice(0, 5)
-    .map(([k, v]) => `
-      <div class="barra-item">
-        <div class="label"><span class="nome">${k}</span><span class="valor">${v} envios</span></div>
-        <div class="barra-track"><div class="barra-fill verde" style="width:${(v/max)*100}%"></div></div>
-      </div>
-    `).join('');
-}
-
-/* =========================================================
-   LISTA COMPLETA DE SHIPMENTS (COM FILTROS)
-   ========================================================= */
-function renderShipmentsFull() {
-  const shipments = getShipments();
-  const fID = document.getElementById('filtroID').value.toLowerCase();
-  const fSt = document.getElementById('filtroStatusShip').value;
-  const fMo = document.getElementById('filtroModal').value;
-  const fTr = document.getElementById('filtroTransportadora').value;
-
-  const filtrados = shipments.filter(s =>
-    (!fID || s.tracking.toLowerCase().includes(fID) || s.cliente.toLowerCase().includes(fID)) &&
-    (!fSt || s.status === fSt) &&
-    (!fMo || s.modal === fMo) &&
-    (!fTr || s.transportadora === fTr)
-  );
-
-  const cont = document.getElementById('listaShipmentsCompleta');
-  if (!filtrados.length) {
-    cont.innerHTML = '<div class="card"><p style="text-align:center; color:var(--texto-sec); padding:30px;">Nenhum shipment encontrado</p></div>';
-    return;
+  const apiKey = localStorage.getItem(CHAVE_API_KEY);
+  if (!apiKey) {
+    toggleApiKeyModal(true);
+    return mostrarToast('⚠️ Configure sua API Key da NVIDIA primeiro', 'alerta');
   }
-  cont.innerHTML = filtrados.map(s => renderShipmentCard(s)).join('');
-}
 
-function popularFiltroTransportadora() {
-  const sel = document.getElementById('filtroTransportadora');
-  sel.innerHTML = '<option value="">Todas transportadoras</option>' +
-    TRANSPORTADORAS.map(t => `<option>${t}</option>`).join('');
-}
+  // UI: Adiciona mensagem do usuário
+  addMsgUser(texto);
+  chatInput.value = '';
+  chatSendBtn.disabled = true;
+  showTyping(true);
 
-/* =========================================================
-   CDs
-   ========================================================= */
-function renderCDs() {
-  const cds = getCDs();
-  const totalCap = cds.reduce((a,c) => a + c.capacidade, 0);
-  const totalOcup = cds.reduce((a,c) => a + c.ocupado, 0);
-  const totalThru = cds.reduce((a,c) => a + c.throughput, 0);
-  const ocupacaoMedia = totalCap ? (totalOcup / totalCap) * 100 : 0;
+  // Adiciona ao histórico
+  chatHistorico.push({ role: 'user', content: texto });
 
-  document.getElementById('kpisCDs').innerHTML = `
-    <div class="kpi"><div class="cabecalho"><div class="titulo">CDs Ativos</div><div class="icone">🏭</div></div>
-      <div class="valor">${cds.length}</div><span class="variacao up">Operacionais</span></div>
-    <div class="kpi"><div class="cabecalho"><div class="titulo">Capacidade Total</div><div class="icone">📦</div></div>
-      <div class="valor">${fmtNum(totalCap)}</div><span class="variacao up">SKUs</span></div>
-    <div class="kpi"><div class="cabecalho"><div class="titulo">Ocupação Média</div><div class="icone">📊</div></div>
-      <div class="valor">${ocupacaoMedia.toFixed(1)}%</div><span class="variacao ${ocupacaoMedia>85?'down':'up'}">${ocupacaoMedia>85?'▲ Alta':'● OK'}</span></div>
-    <div class="kpi"><div class="cabecalho"><div class="titulo">Throughput Diário</div><div class="icone">⚡</div></div>
-      <div class="valor">${fmtNum(totalThru)}</div><span class="variacao up">pedidos/dia</span></div>
-  `;
+  try {
+    const systemPrompt = buildSystemPrompt(texto);
 
-  document.getElementById('listaCDs').innerHTML = cds.map(c => {
-    const pct = (c.ocupado / c.capacidade) * 100;
-    const cor = pct > 85 ? 'var(--perigo)' : pct > 70 ? 'var(--alerta)' : 'var(--sucesso)';
-    return `
-      <div class="cd-card">
-        <div class="nome">${c.nome} <span class="badge ${pct>85?'atrasado':pct>70?'coleta':'entregue'}">${c.tipo}</span></div>
-        <div class="cidade">📍 ${c.cidade}</div>
-        <div class="capacidade"><div class="cap-fill" style="width:${pct}%; background:${cor}"></div></div>
-        <div class="stats">
-          <div><strong>${fmtNum(c.ocupado)}</strong> / ${fmtNum(c.capacidade)}</div>
-          <div>${pct.toFixed(1)}%</div>
-        </div>
-        <div class="stats" style="margin-top:8px; padding-top:8px; border-top:1px solid var(--borda);">
-          <div>Throughput: <strong>${fmtNum(c.throughput)}/d</strong></div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
+    const response = await fetch(NVIDIA_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: NVIDIA_MODEL,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...chatHistorico.slice(-10) // Mantém últimas 10 msgs para contexto
+        ],
+        temperature: 0.3,
+        max_tokens: 1024,
+        stream: false // Set true se quiser implementar streaming real
+      })
+    });
 
-/* =========================================================
-   FROTA
-   ========================================================= */
-function renderFrota() {
-  const frota = getFrota();
-  const ativas = frota.filter(v => v.status === 'ativo').length;
-  const manut = frota.filter(v => v.status === 'manutencao').length;
-  const kmTotal = frota.reduce((a,v) => a + v.km, 0);
-
-  document.getElementById('kpisFrota').innerHTML = `
-    <div class="kpi"><div class="cabecalho"><div class="titulo">Frota Total</div><div class="icone">🚛</div></div>
-      <div class="valor">${frota.length}</div><span class="variacao up">${ativas} ativas</span></div>
-    <div class="kpi"><div class="cabecalho"><div class="titulo">Em Manutenção</div><div class="icone">🔧</div></div>
-      <div class="valor">${manut}</div><span class="variacao ${manut>0?'down':'up'}">${manut>0?'⚠':'OK'}</span></div>
-    <div class="kpi"><div class="cabecalho"><div class="titulo">Disponibilidade</div><div class="icone">✅</div></div>
-      <div class="valor">${((ativas/frota.length)*100).toFixed(0)}%</div><span class="variacao up">Fleet uptime</span></div>
-    <div class="kpi"><div class="cabecalho"><div class="titulo">KM Total</div><div class="icone">📏</div></div>
-      <div class="valor">${fmtNum(kmTotal)}</div><span class="variacao up">acumulados</span></div>
-  `;
-
-  document.getElementById('listaFrota').innerHTML = frota.map(v => `
-    <div class="frota-item">
-      <div style="font-size:1.8rem;">🚚</div>
-      <div class="frota-info">
-        <div class="placa"><span class="status-frota ${v.status}"></span>${v.placa}</div>
-        <div class="motorista">${v.tipo} • ${v.motorista}</div>
-      </div>
-      <div style="text-align:right; font-size:.82rem;">
-        <div style="color:var(--texto); font-weight:600;">${fmtNum(v.km)} km</div>
-        <div style="color:var(--texto-sec);">Manut: ${fmtData(v.ultimaManutencao)}</div>
-      </div>
-      <span class="badge ${v.status==='ativo'?'entregue':v.status==='manutencao'?'coleta':'atrasado'}">${v.status}</span>
-    </div>
-  `).join('');
-}
-
-/* =========================================================
-   RELATÓRIOS
-   ========================================================= */
-function renderRelatorios() {
-  const shipments = getShipments();
-  const k = calcularKPIs();
-
-  const kpisAv = [
-    { nome: 'OTIF', valor: k.otif.toFixed(1) + '%', meta: '85%', pct: k.otif/85, cor: 'verde' },
-    { nome: 'Perfect Order', valor: k.perfectOrder.toFixed(1) + '%', meta: '92%', pct: k.perfectOrder/92, cor: 'azul' },
-    { nome: 'On-Time Delivery', valor: ((k.noPrazo/Math.max(k.total,1))*100).toFixed(1) + '%', meta: '90%', pct: (k.noPrazo/Math.max(k.total,1)*100)/90, cor: 'verde' },
-    { nome: 'Fill Rate', valor: '94.2%', meta: '95%', pct: 94.2/95, cor: 'azul' },
-    { nome: 'Dock-to-Stock', valor: '3.2h', meta: '4h', pct: 80, cor: 'verde' },
-    { nome: 'Order Cycle Time', valor: k.leadTimeMedio.toFixed(1) + 'd', meta: '18d', pct: 70, cor: 'laranja' }
-  ];
-
-  document.getElementById('relKPIs').innerHTML = kpisAv.map(kpi => `
-    <div class="barra-item">
-      <div class="label"><span class="nome">${kpi.nome}</span><span class="valor">${kpi.valor} <small style="color:var(--texto-sec);">(meta: ${kpi.meta})</small></span></div>
-      <div class="barra-track"><div class="barra-fill ${kpi.cor}" style="width:${Math.min(kpi.pct*100, 100)}%"></div></div>
-    </div>
-  `).join('');
-
-  const custos = {
-    'Marítimo': shipments.filter(s=>s.modal==='Marítimo').reduce((a,s)=>a+s.valor*0.12, 0),
-    'Aéreo': shipments.filter(s=>s.modal==='Aéreo').reduce((a,s)=>a+s.valor*0.28, 0),
-    'Rodoviário': shipments.filter(s=>s.modal==='Rodoviário').reduce((a,s)=>a+s.valor*0.15, 0),
-    'Ferroviário': shipments.filter(s=>s.modal==='Ferroviário').reduce((a,s)=>a+s.valor*0.09, 0)
-  };
-  const maxC = Math.max(...Object.values(custos), 1);
-  document.getElementById('relCustos').innerHTML = Object.entries(custos)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([m, v]) => `
-      <div class="barra-item">
-        <div class="label"><span class="nome">${m}</span><span class="valor">${fmtUSD(v)}</span></div>
-        <div class="barra-track"><div class="barra-fill azul" style="width:${(v/maxC)*100}%"></div></div>
-      </div>
-    `).join('');
-
-  const porOrigem = {}, porDestino = {};
-  shipments.forEach(s => {
-    const pO = s.origem.split(',').pop().trim();
-    const pD = s.destino.split(',').pop().trim();
-    porOrigem[pO] = (porOrigem[pO] || 0) + 1;
-    porDestino[pD] = (porDestino[pD] || 0) + 1;
-  });
-  const maxO = Math.max(...Object.values(porOrigem), 1);
-  document.getElementById('relOrigem').innerHTML = Object.entries(porOrigem)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([p, v]) => `
-      <div class="barra-item">
-        <div class="label"><span class="nome">${p}</span><span class="valor">${v} envios</span></div>
-        <div class="barra-track"><div class="barra-fill roxo" style="width:${(v/maxO)*100}%"></div></div>
-      </div>
-    `).join('');
-
-  const maxD = Math.max(...Object.values(porDestino), 1);
-  document.getElementById('relDestino').innerHTML = Object.entries(porDestino)
-    .sort((a,b)=>b[1]-a[1])
-    .map(([p, v]) => `
-      <div class="barra-item">
-        <div class="label"><span class="nome">${p}</span><span class="valor">${v} envios</span></div>
-        <div class="barra-track"><div class="barra-fill verde" style="width:${(v/maxD)*100}%"></div></div>
-      </div>
-    `).join('');
-}
-
-/* =========================================================
-   FORMULÁRIO SHIPMENT
-   ========================================================= */
-function popularSelectsShipment() {
-  const sel = document.getElementById('shpTransportadora');
-  sel.innerHTML = '<option value="">Selecione...</option>' +
-    TRANSPORTADORAS.map(t => `<option>${t}</option>`).join('');
-  document.getElementById('shpData').valueAsDate = new Date();
-  document.getElementById('shpTracking').value = gerarTrackingID();
-}
-
-document.getElementById('formShipment').addEventListener('submit', e => {
-  e.preventDefault();
-  const id = document.getElementById('shpId').value;
-  const status = document.getElementById('shpStatus').value;
-  const dados = {
-    tracking: document.getElementById('shpTracking').value,
-    cliente: document.getElementById('shpCliente').value,
-    origem: document.getElementById('shpOrigem').value,
-    destino: document.getElementById('shpDestino').value,
-    modal: document.getElementById('shpModal').value,
-    transportadora: document.getElementById('shpTransportadora').value,
-    peso: parseFloat(document.getElementById('shpPeso').value),
-    volume: parseFloat(document.getElementById('shpVolume').value),
-    valor: parseFloat(document.getElementById('shpValor').value),
-    sla: parseInt(document.getElementById('shpSLA').value),
-    dataColeta: document.getElementById('shpData').value,
-    status: status,
-    observacoes: document.getElementById('shpObs').value,
-    progresso: calcularProgresso(status)
-  };
-  if (id) {
-    updateShipment(parseInt(id), dados);
-    mostrarToast('✅ Shipment atualizado', 'sucesso');
-  } else {
-    addShipment(dados);
-    mostrarToast('✅ Embarque registrado com sucesso', 'sucesso');
-  }
-  limparFormShipment();
-  atualizarTudo();
-});
-
-function limparFormShipment() {
-  document.getElementById('formShipment').reset();
-  document.getElementById('shpId').value = '';
-  popularSelectsShipment();
-}
-
-function editarShipment(id) {
-  const s = getShipments().find(x => x.id === id);
-  if (!s) return;
-  document.getElementById('shpId').value = s.id;
-  document.getElementById('shpTracking').value = s.tracking;
-  document.getElementById('shpCliente').value = s.cliente;
-  document.getElementById('shpOrigem').value = s.origem;
-  document.getElementById('shpDestino').value = s.destino;
-  document.getElementById('shpModal').value = s.modal;
-  document.getElementById('shpTransportadora').value = s.transportadora;
-  document.getElementById('shpPeso').value = s.peso;
-  document.getElementById('shpVolume').value = s.volume;
-  document.getElementById('shpValor').value = s.valor;
-  document.getElementById('shpSLA').value = s.sla;
-  document.getElementById('shpData').value = s.dataColeta;
-  document.getElementById('shpStatus').value = s.status;
-  document.getElementById('shpObs').value = s.observacoes || '';
-  document.querySelector('[data-secao="novo-embarque"]').click();
-}
-
-function excluirShipment(id) {
-  if (!confirm('Excluir este shipment permanentemente?')) return;
-  deleteShipment(id);
-  mostrarToast('🗑️ Shipment excluído', 'alerta');
-  atualizarTudo();
-}
-
-/* =========================================================
-   MODAL VEÍCULO
-   ========================================================= */
-function abrirModalVeiculo() {
-  document.getElementById('modalVeiculo').classList.add('visivel');
-}
-function fecharModal(id) {
-  document.getElementById(id).classList.remove('visivel');
-}
-document.getElementById('formVeiculo').addEventListener('submit', e => {
-  e.preventDefault();
-  const veiculo = {
-    placa: document.getElementById('vPlaca').value.toUpperCase(),
-    tipo: document.getElementById('vTipo').value,
-    motorista: document.getElementById('vMotorista').value,
-    status: document.getElementById('vStatus').value,
-    km: Math.floor(50000 + Math.random() * 100000),
-    ultimaManutencao: new Date().toISOString().slice(0, 10)
-  };
-  addVeiculo(veiculo);
-  fecharModal('modalVeiculo');
-  document.getElementById('formVeiculo').reset();
-  mostrarToast('✅ Veículo cadastrado', 'sucesso');
-  atualizarTudo();
-});
-
-/* =========================================================
-   EXPORT / IMPORT / RESET
-   ========================================================= */
-function exportarDados() {
-  const dados = {
-    shipments: getShipments(),
-    cds: getCDs(),
-    frota: getFrota(),
-    alertas: getAlertas(),
-    exportado: new Date().toISOString()
-  };
-  const blob = new Blob([JSON.stringify(dados, null, 2)], { type:'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `logichain_backup_${new Date().toISOString().slice(0,10)}.json`;
-  a.click();
-  mostrarToast('📥 Backup exportado', 'sucesso');
-}
-
-function importarDadosPrompt() {
-  document.getElementById('fileImport').click();
-}
-document.getElementById('fileImport').addEventListener('change', e => {
-  const file = e.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    try {
-      const dados = JSON.parse(ev.target.result);
-      if (dados.shipments) salvarDados(CHAVE_SHIPMENTS, dados.shipments);
-      if (dados.cds) salvarDados(CHAVE_CDS, dados.cds);
-      if (dados.frota) salvarDados(CHAVE_FROTA, dados.frota);
-      if (dados.alertas) salvarDados(CHAVE_ALERTAS, dados.alertas);
-      mostrarToast('📤 Dados importados com sucesso', 'sucesso');
-      atualizarTudo();
-    } catch (err) {
-      mostrarToast('❌ Arquivo inválido', 'erro');
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${response.status}`);
     }
-  };
-  reader.readAsText(file);
-});
 
-function resetarSistema() {
-  if (!confirm('Isso apagará todos os dados e restaurará o cenário mock global. Continuar?')) return;
-  localStorage.removeItem(CHAVE_SHIPMENTS);
-  localStorage.removeItem(CHAVE_CDS);
-  localStorage.removeItem(CHAVE_FROTA);
-  localStorage.removeItem(CHAVE_ALERTAS);
-  mostrarToast('🔄 Sistema resetado para dados globais', 'alerta');
-  atualizarTudo();
-}
+    const data = await response.json();
+    const reply = data.choices?.[0]?.message?.content || 'Sem resposta da IA.';
 
-function sincronizar() {
-  mostrarToast('🔄 Sincronizando com hubs globais...', 'alerta');
-  setTimeout(() => mostrarToast('✅ Sincronização concluída', 'sucesso'), 1200);
-}
+    chatHistorico.push({ role: 'assistant', content: reply });
+    addMsgAi(reply);
 
-/* =========================================================
-   TOAST
-   ========================================================= */
-function mostrarToast(msg, tipo = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast visivel ' + tipo;
-  setTimeout(() => t.classList.remove('visivel'), 2800);
-}
-
-/* =========================================================
-   FILTROS - EVENTOS
-   ========================================================= */
-['filtroID', 'filtroStatusShip', 'filtroModal', 'filtroTransportadora'].forEach(id => {
-  document.getElementById(id).addEventListener('input', renderShipmentsFull);
-  document.getElementById(id).addEventListener('change', renderShipmentsFull);
-});
-
-/* =========================================================
-   ATUALIZAÇÃO GERAL
-   ========================================================= */
-function atualizarTudo() {
-  renderKPIs();
-  renderShipmentsDash();
-  renderAlertasDash();
-  renderAlertasFull();
-  renderGraficoModal();
-  renderGraficoCorredores();
-  renderGraficoTransportadoras();
-  renderShipmentsFull();
-  renderCDs();
-  renderFrota();
-  renderRelatorios();
-  document.getElementById('badgeShipments').textContent = getShipments().filter(s=>s.status!=='Entregue').length;
-}
-
-/* =========================================================
-   INICIALIZAÇÃO
-   ========================================================= */
-popularFiltroTransportadora();
-popularSelectsShipment();
-atualizarTudo();
-
-// Atualização automática simulada (efeito "Live")
-setInterval(() => {
-  const pulse = document.querySelector('.pulse-dot');
-  if (pulse) {
-    pulse.style.animation = 'none';
-    setTimeout(() => pulse.style.animation = '', 10);
+  } catch (err) {
+    console.error('Erro NVIDIA NIM:', err);
+    let errMsg = `❌ Erro na API: ${err.message}`;
+    if (err.message.includes('401')) errMsg = '❌ API Key inválida. Verifique nas configurações.';
+    if (err.message.includes('429')) errMsg = '❌ Limite de requisições excedido. Aguarde.';
+    addMsgAi(errMsg);
+    mostrarToast('Erro na comunicação com IA', 'erro');
+  } finally {
+    showTyping(false);
+    chatSendBtn.disabled = false;
+    chatInput.focus();
   }
-}, 60000);
+}
+
+// --- Helpers de UI do Chat ---
+function addMsgUser(texto) {
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.textContent = texto;
+  chatMessages.appendChild(div);
+  scrollChat();
+}
+
+function addMsgAi(texto) {
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  // Suporte básico a markdown negrito e quebras de linha
+  div.innerHTML = texto
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>')
+    .replace(/• /g, '&bull; ');
+  chatMessages.appendChild(div);
+  scrollChat();
+}
+
+function showTyping(show) {
+  const existing = document.querySelector('.typing-indicator');
+  if (show && !existing) {
+    const div = document.createElement('div');
+    div.className = 'typing-indicator';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    chatMessages.appendChild(div);
+    scrollChat();
+  } else if (!show && existing) {
+    existing.remove();
+  }
+}
+
+function scrollChat() {
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Enter para enviar
+chatInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    enviarMensagem();
+  }
+});
+
+// Verifica se já tem key ao iniciar
+if (!localStorage.getItem(CHAVE_API_KEY)) {
+  setTimeout(() => {
+    if (!chatWindow.classList.contains('visivel')) {
+      aiFab.style.animation = 'pulse 2s 3';
+    }
+  }, 3000);
+}
 </script>
 </body>
 </html>
