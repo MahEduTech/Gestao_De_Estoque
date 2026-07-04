@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Gestão Comercial & Logística | MVP</title>
+<style>
+  /* =========================================================
+     RESET E VARIÁVEIS DE TEMA
+     ========================================================= */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --azul-profundo: #1e3a8a;
+    --azul-escuro: #172554;
+    --azul-claro: #3b82f6;
+    --verde-fin: #10b981;
+    --verde-escuro: #047857;
+    --vermelho: #ef4444;
+    --amarelo: #f59e0b;
+    --cinza-bg: #f1f5f9;
+    --cinza-card: #ffffff;
+    --cinza-texto: #334155;
+    --cinza-borda: #e2e8f0;
+    --sombra: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -2px rgba(0,0,0,.05);
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: var(--cinza-bg);
+    color: var(--cinza-texto);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* =========================================================
+     SIDEBAR
+     ========================================================= */
+  .sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, var(--azul-escuro), var(--azul-profundo));
+    color: #fff;
+    padding: 24px 0;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    transition: transform .3s;
+    z-index: 100;
+  }
+  .sidebar .logo {
+    padding: 0 24px 24px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    font-size: 1.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sidebar .logo span { font-size: 1.6rem; }
+  .sidebar nav { padding: 16px 0; }
+  .sidebar nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    color: #cbd5e1;
+    text-decoration: none;
+    cursor: pointer;
+    border-left: 4px solid transparent;
+    transition: all .2s;
+  }
+  .sidebar nav a:hover { background: rgba(255,255,255,.05); color: #fff; }
+  .sidebar nav a.ativo {
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    border-left-color: var(--verde-fin);
+  }
+  .sidebar nav a .icon { font-size: 1.2rem; }
+
+  /* =========================================================
+     CONTEÚDO PRINCIPAL
+     ========================================================= */
+  .main {
+    margin-left: 250px;
+    flex: 1;
+    padding: 32px;
+    min-height: 100vh;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header h1 {
+    color: var(--azul-escuro);
+    font-size: 1.8rem;
+  }
+  .header .data {
+    color: #64748b;
+    font-size: .95rem;
+  }
+  .btn-menu {
+    display: none;
+    background: var(--azul-profundo);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  /* =========================================================
+     SEÇÕES
+     ========================================================= */
+  .secao { display: none; animation: fadeIn .3s ease; }
+  .secao.ativa { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* =========================================================
+     KPI CARDS
+     ========================================================= */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .kpi {
+    background: var(--cinza-card);
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    border-left: 5px solid var(--azul-claro);
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi.verde { border-left-color: var(--verde-fin); }
+  .kpi.amarelo { border-left-color: var(--amarelo); }
+  .kpi.vermelho { border-left-color: var(--vermelho); }
+  .kpi .titulo {
+    font-size: .85rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+  .kpi .valor {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--azul-escuro);
+  }
+  .kpi .sub {
+    font-size: .8rem;
+    color: #64748b;
+    margin-top: 6px;
+  }
+  .kpi .icone {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 2.2rem;
+    opacity: .15;
+  }
+
+  /* =========================================================
+     GRÁFICOS / CARDS DE LISTA
+     ========================================================= */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+  .card {
+    background: var(--cinza-card);
+    padding: 22px;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+  }
+  .card h3 {
+    color: var(--azul-escuro);
+    margin-bottom: 18px;
+    font-size: 1.1rem;
+    border-bottom: 2px solid var(--cinza-borda);
+    padding-bottom: 10px;
+  }
+  .barra-item {
+    margin-bottom: 14px;
+  }
+  .barra-item .label {
+    display: flex;
+    justify-content: space-between;
+    font-size: .9rem;
+    margin-bottom: 4px;
+  }
+  .barra-item .label .nome { font-weight: 600; }
+  .barra-item .label .valor { color: #64748b; }
+  .barra-track {
+    background: var(--cinza-borda);
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .barra-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--azul-claro), var(--azul-profundo));
+    border-radius: 5px;
+    transition: width .6s ease;
+  }
+  .barra-fill.verde { background: linear-gradient(90deg, var(--verde-fin), var(--verde-escuro)); }
+  .barra-fill.vermelho { background: linear-gradient(90deg, var(--vermelho), #b91c1c); }
+  .barra-fill.amarelo { background: linear-gradient(90deg, var(--amarelo), #b45309); }
+
+  /* =========================================================
+     TOP PERFORMERS
+     ========================================================= */
+  .top-list {
+    list-style: none;
+  }
+  .top-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--cinza-borda);
+  }
+  .top-list li:last-child { border-bottom: none; }
+  .top-list .pos {
+    width: 28px;
+    height: 28px;
+    background: var(--azul-profundo);
+    color: #fff;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .8rem;
+    font-weight: 700;
+    margin-right: 10px;
+  }
+  .top-list .pos.ouro { background: #f59e0b; }
+  .top-list .pos.prata { background: #94a3b8; }
+  .top-list .pos.bronze { background: #b45309; }
+  .top-list .info { flex: 1; }
+  .top-list .nome { font-weight: 600; }
+  .top-list .bonus { color: var(--verde-escuro); font-size: .85rem; }
+  .top-list .fat { font-weight: 700; color: var(--azul-escuro); }
+
+  /* =========================================================
+     FORMULÁRIO
+     ========================================================= */
+  .form-card {
+    background: var(--cinza-card);
+    padding: 28px;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    max-width: 720px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid .full { grid-column: span 2; }
+  .campo label {
+    display: block;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--azul-escuro);
+    margin-bottom: 6px;
+  }
+  .campo input, .campo select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    font-size: .95rem;
+    background: #fff;
+    transition: border-color .2s;
+  }
+  .campo input:focus, .campo select:focus {
+    outline: none;
+    border-color: var(--azul-claro);
+    box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+  }
+  .bonus-preview {
+    margin-top: 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border-radius: 8px;
+    border-left: 4px solid var(--verde-fin);
+  }
+  .bonus-preview .titulo {
+    font-size: .85rem;
+    color: var(--verde-escuro);
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .bonus-preview .valor {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--verde-escuro);
+    margin-top: 4px;
+  }
+  .bonus-preview .regra {
+    font-size: .78rem;
+    color: #64748b;
+    margin-top: 4px;
+  }
+  .botoes {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .btn {
+    padding: 12px 22px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: .95rem;
+  }
+  .btn-primario {
+    background: var(--verde-fin);
+    color: #fff;
+  }
+  .btn-primario:hover { background: var(--verde-escuro); }
+  .btn-secundario {
+    background: var(--cinza-borda);
+    color: var(--cinza-texto);
+  }
+  .btn-secundario:hover { background: #cbd5e1; }
+  .btn-perigo {
+    background: var(--vermelho);
+    color: #fff;
+    padding: 6px 12px;
+    font-size: .8rem;
+  }
+  .btn-editar {
+    background: var(--azul-claro);
+    color: #fff;
+    padding: 6px 12px;
+    font-size: .8rem;
+  }
+
+  /* =========================================================
+     TABELA DE RELATÓRIOS / LOGÍSTICA
+     ========================================================= */
+  .filtros {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .filtros select, .filtros input {
+    padding: 8px 12px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    font-size: .9rem;
+    background: #fff;
+  }
+  .tabela-wrap {
+    background: var(--cinza-card);
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    overflow-x: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+  }
+  thead {
+    background: var(--azul-profundo);
+    color: #fff;
+  }
+  th, td {
+    padding: 12px 14px;
+    text-align: left;
+    font-size: .9rem;
+  }
+  tbody tr { border-bottom: 1px solid var(--cinza-borda); }
+  tbody tr:hover { background: #f8fafc; }
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: .75rem;
+    font-weight: 600;
+  }
+  .badge.atrasado { background: #fee2e2; color: #991b1b; }
+  .badge.noprazo { background: #dbeafe; color: #1e40af; }
+  .badge.antecipado { background: #d1fae5; color: #065f46; }
+  .acoes { display: flex; gap: 6px; }
+
+  /* =========================================================
+     TOAST
+     ========================================================= */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--verde-escuro);
+    color: #fff;
+    padding: 14px 22px;
+    border-radius: 8px;
+    box-shadow: var(--sombra);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all .3s;
+    z-index: 1000;
+  }
+  .toast.visivel { opacity: 1; transform: translateY(0); }
+  .toast.erro { background: var(--vermelho); }
+
+  /* =========================================================
+     RESPONSIVO
+     ========================================================= */
+  @media (max-width: 900px) {
+    .grid-2 { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: span 1; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.aberta { transform: translateX(0); }
+    .main { margin-left: 0; padding: 20px; }
+    .btn-menu { display: inline-block; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo"><span>📊</span> GestãoPro</div>
+  <nav>
+    <a class="ativo" data-secao="dashboard"><span class="icon">📈</span> Dashboard</a>
+    <a data-secao="nova-venda"><span class="icon">➕</span> Nova Venda</a>
+    <a data-secao="vendas"><span class="icon">🛒</span> Vendas</a>
+    <a data-secao="logistica"><span class="icon">🚚</span> Logística</a>
+    <a data-secao="relatorios"><span class="icon">📋</span> Relatórios</a>
+  </nav>
+</aside>
+
+<!-- ===================== MAIN ===================== -->
+<main class="main">
+  <div class="header">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <button class="btn-menu" onclick="document.getElementById('sidebar').classList.toggle('aberta')">☰</button>
+      <div>
+        <h1 id="tituloPagina">Dashboard</h1>
+        <div class="data" id="dataAtual"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD ============ -->
+  <section class="secao ativa" id="dashboard">
+    <div class="kpis">
+      <div class="kpi verde">
+        <div class="titulo">Faturamento Total</div>
+        <div class="valor" id="kpiFaturamento">R$ 0,00</div>
+        <div class="sub" id="kpiFatSub">0 vendas registradas</div>
+        <div class="icone">💰</div>
+      </div>
+      <div class="kpi">
+        <div class="titulo">Bônus Pago</div>
+        <div class="valor" id="kpiBonus">R$ 0,00</div>
+        <div class="sub">30% do faturamento</div>
+        <div class="icone">🎁</div>
+      </div>
+      <div class="kpi amarelo">
+        <div class="titulo">Entregas No Prazo</div>
+        <div class="valor" id="kpiNoPrazo">0</div>
+        <div class="sub" id="kpiNoPrazoPct">0% do total</div>
+        <div class="icone">✅</div>
+      </div>
+      <div class="kpi vermelho">
+        <div class="titulo">Entregas Atrasadas</div>
+        <div class="valor" id="kpiAtrasado">0</div>
+        <div class="sub" id="kpiAtrasadoPct">0% do total</div>
+        <div class="icone">⚠️</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>🗺️ Faturamento por Região</h3>
+        <div id="graficoRegiao"></div>
+      </div>
+      <div class="card">
+        <h3>📦 Faturamento por Produto</h3>
+        <div id="graficoProduto"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>🏆 Top Performers (Bônus)</h3>
+        <ul class="top-list" id="topVendedores"></ul>
+      </div>
+      <div class="card">
+        <h3>🚦 Status das Entregas</h3>
+        <div id="graficoStatus"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ NOVA VENDA ============ -->
+  <section class="secao" id="nova-venda">
+    <div class="form-card">
+      <h3 style="color:var(--azul-escuro); margin-bottom:20px;">Registrar Nova Venda</h3>
+      <form id="formVenda">
+        <input type="hidden" id="vendaId" />
+        <div class="form-grid">
+          <div class="campo">
+            <label>Vendedor *</label>
+            <select id="vendedor" required>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Produto *</label>
+            <select id="produto" required>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Valor da Venda (R$) *</label>
+            <input type="number" id="valor" step="0.01" min="0" required placeholder="0,00" />
+          </div>
+          <div class="campo">
+            <label>Região *</label>
+            <select id="regiao" required>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Status da Entrega *</label>
+            <select id="status" required>
+              <option value="">Selecione...</option>
+            </select>
+          </div>
+          <div class="campo">
+            <label>Data da Venda</label>
+            <input type="date" id="dataVenda" />
+          </div>
+        </div>
+
+        <div class="bonus-preview">
+          <div class="titulo">💰 Bônus Estimado do Vendedor</div>
+          <div class="valor" id="bonusPreview">R$ 0,00</div>
+          <div class="regra">Regra: 30% do valor da venda (baseado no histórico da operação)</div>
+        </div>
+
+        <div class="botoes">
+          <button type="submit" class="btn btn-primario" id="btnSalvar">💾 Salvar Venda</button>
+          <button type="button" class="btn btn-secundario" onclick="limparFormulario()">🔄 Limpar</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============ LISTA DE VENDAS ============ -->
+  <section class="secao" id="vendas">
+    <div class="filtros">
+      <select id="filtroVendedor"><option value="">Todos os vendedores</option></select>
+      <select id="filtroProduto"><option value="">Todos os produtos</option></select>
+      <select id="filtroRegiao"><option value="">Todas as regiões</option></select>
+      <input type="text" id="filtroBusca" placeholder="🔍 Buscar..." />
+    </div>
+    <div class="tabela-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th><th>Vendedor</th><th>Produto</th><th>Região</th>
+            <th>Valor</th><th>Bônus</th><th>Status</th><th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaVendas"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ LOGÍSTICA ============ -->
+  <section class="secao" id="logistica">
+    <div class="filtros">
+      <select id="filtroStatusLog">
+        <option value="">Todos os status</option>
+        <option value="Atrasado">⚠️ Atrasado</option>
+        <option value="No prazo">✅ No prazo</option>
+        <option value="Antecipado">🚀 Antecipado</option>
+      </select>
+      <select id="filtroRegiaoLog"><option value="">Todas as regiões</option></select>
+    </div>
+    <div class="tabela-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Pedido</th><th>Data</th><th>Vendedor</th><th>Região</th>
+            <th>Valor</th><th>Status</th><th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabelaLogistica"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ RELATÓRIOS ============ -->
+  <section class="secao" id="relatorios">
+    <div class="grid-2">
+      <div class="card">
+        <h3>📊 Ranking por Vendedor</h3>
+        <div id="relVendedor"></div>
+      </div>
+      <div class="card">
+        <h3>🌎 Ranking por Região</h3>
+        <div id="relRegiao"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3>⚙️ Gerenciamento de Dados</h3>
+      <p style="margin-bottom:14px; color:#64748b;">
+        Os dados são salvos automaticamente no <strong>localStorage</strong> do navegador.
+      </p>
+      <div class="botoes">
+        <button class="btn btn-secundario" onclick="exportarJSON()">📥 Exportar JSON</button>
+        <button class="btn btn-perigo" onclick="resetarDados()">🗑️ Resetar para Dados Iniciais</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   CONFIGURAÇÃO E CONSTANTES
+   ========================================================= */
+const VENDEDORES = ['Patrícia','Ricardo','Carlos','Mariana','Lucas','João','Camila','Fernanda'];
+const REGIOES = ['Sudeste','Norte','Centro-Oeste','Nordeste','Sul'];
+const PRODUTOS = ['Cadeira Gamer','Fone Bluetooth'];
+const STATUS_ENTREGA = ['Atrasado','No prazo','Antecipado'];
+const TAXA_BONUS = 0.30; // 30% do valor da venda
+const CHAVE_STORAGE = 'gestaoPro_vendas_v1';
+
+/* =========================================================
+   DADOS INICIAIS (MOCK) - Baseados no PDF fornecido
+   Total alvo: ~R$ 1.523.994,71 | Bônus: ~R$ 457.198,41
+   ========================================================= */
+function gerarDadosIniciais() {
+  // Distribuição aproximada por vendedor (conforme gráfico do PDF)
+  const distribuicao = [
+    { nome:'Patrícia',  fat:356780, regiao:'Sudeste' },
+    { nome:'Ricardo',   fat:264000, regiao:'Sudeste' },
+    { nome:'Mariana',   fat:229350, regiao:'Sul' },
+    { nome:'Carlos',    fat:200000, regiao:'Nordeste' },
+    { nome:'João',      fat:180000, regiao:'Centro-Oeste' },
+    { nome:'Fernanda',  fat:130000, regiao:'Norte' },
+    { nome:'Lucas',     fat:90000,  regiao:'Sul' },
+    { nome:'Camila',    fat:73864.71, regiao:'Norte' }
+  ];
+
+  const vendas = [];
+  let id = 1;
+
+  distribuicao.forEach(vendedor => {
+    // Cada vendedor tem entre 3 e 6 vendas
+    const numVendas = 3 + Math.floor(Math.random() * 4);
+    let restante = vendedor.fat;
+
+    for (let i = 0; i < numVendas; i++) {
+      const isUltima = i === numVendas - 1;
+      const valor = isUltima ? restante : (restante / (numVendas - i)) * (0.5 + Math.random());
+      restante -= valor;
+
+      const dia = String(1 + Math.floor(Math.random() * 27)).padStart(2,'0');
+      const mes = String(1 + Math.floor(Math.random() * 6)).padStart(2,'0');
+
+      // Distribuição de status: mais "Atrasado" conforme PDF
+      const rnd = Math.random();
+      let status = 'No prazo';
+      if (rnd < 0.40) status = 'Atrasado';
+      else if (rnd < 0.85) status = 'No prazo';
+      else status = 'Antecipado';
+
+      vendas.push({
+        id: id++,
+        vendedor: vendedor.nome,
+        produto: PRODUTOS[Math.floor(Math.random() * PRODUTOS.length)],
+        valor: parseFloat(valor.toFixed(2)),
+        regiao: vendedor.regiao,
+        status: status,
+        data: `2026-${mes}-${dia}`
+      });
+    }
+  });
+
+  return vendas;
+}
+
+/* =========================================================
+   MANIPULAÇÃO DO LOCALSTORAGE
+   - carregarVendas(): lê do storage ou cria dados iniciais
+   - salvarVendas(): persiste o array no storage
+   - adicionarVenda(), editarVenda(), excluirVenda(): CRUD
+   ========================================================= */
+function carregarVendas() {
+  const dados = localStorage.getItem(CHAVE_STORAGE);
+  if (dados) {
+    try { return JSON.parse(dados); }
+    catch(e) { console.error('Erro ao ler storage', e); }
+  }
+  // Primeira execução: carrega dados mock
+  const iniciais = gerarDadosIniciais();
+  salvarVendas(iniciais);
+  return iniciais;
+}
+
+function salvarVendas(vendas) {
+  localStorage.setItem(CHAVE_STORAGE, JSON.stringify(vendas));
+}
+
+function adicionarVenda(venda) {
+  const vendas = carregarVendas();
+  venda.id = vendas.length ? Math.max(...vendas.map(v=>v.id)) + 1 : 1;
+  vendas.push(venda);
+  salvarVendas(vendas);
+  return venda;
+}
+
+function editarVenda(id, novosDados) {
+  const vendas = carregarVendas();
+  const idx = vendas.findIndex(v => v.id === id);
+  if (idx >= 0) {
+    vendas[idx] = { ...vendas[idx], ...novosDados };
+    salvarVendas(vendas);
+    return true;
+  }
+  return false;
+}
+
+function excluirVenda(id) {
+  let vendas = carregarVendas();
+  vendas = vendas.filter(v => v.id !== id);
+  salvarVendas(vendas);
+}
+
+/* =========================================================
+   CÁLCULO DE BÔNUS
+   Regra: 30% do valor da venda (proporção observada no PDF)
+   Total histórico: R$ 457.198,41 / R$ 1.523.994,71 ≈ 30%
+   ========================================================= */
+function calcularBonus(valor) {
+  return parseFloat((valor * TAXA_BONUS).toFixed(2));
+}
+
+/* =========================================================
+   FORMATAÇÃO
+   ========================================================= */
+function formatarMoeda(v) {
+  return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+}
+function formatarData(d) {
+  if (!d) return '-';
+  const [a,m,dia] = d.split('-');
+  return `${dia}/${m}/${a}`;
+}
+function classeStatus(s) {
+  if (s === 'Atrasado') return 'atrasado';
+  if (s === 'No prazo') return 'noprazo';
+  return 'antecipado';
+}
+
+/* =========================================================
+   NAVEGAÇÃO ENTRE SEÇÕES
+   ========================================================= */
+document.querySelectorAll('.sidebar nav a').forEach(link => {
+  link.addEventListener('click', () => {
+    const secao = link.dataset.secao;
+    document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('ativo'));
+    link.classList.add('ativo');
+    document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
+    document.getElementById(secao).classList.add('ativa');
+    document.getElementById('tituloPagina').textContent = link.textContent.trim();
+    if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('aberta');
+    atualizarTudo();
+  });
+});
+
+/* =========================================================
+   POPULAÇÃO DOS SELECTS
+   ========================================================= */
+function popularSelects() {
+  const selVend = document.getElementById('vendedor');
+  const selProd = document.getElementById('produto');
+  const selReg  = document.getElementById('regiao');
+  const selStat = document.getElementById('status');
+
+  VENDEDORES.forEach(v => selVend.innerHTML += `<option value="${v}">${v}</option>`);
+  PRODUTOS.forEach(p => selProd.innerHTML += `<option value="${p}">${p}</option>`);
+  REGIOES.forEach(r => selReg.innerHTML += `<option value="${r}">${r}</option>`);
+  STATUS_ENTREGA.forEach(s => selStat.innerHTML += `<option value="${s}">${s}</option>`);
+
+  // Filtros
+  const fV = document.getElementById('filtroVendedor');
+  const fP = document.getElementById('filtroProduto');
+  const fR = document.getElementById('filtroRegiao');
+  const fRL = document.getElementById('filtroRegiaoLog');
+  VENDEDORES.forEach(v => fV.innerHTML += `<option value="${v}">${v}</option>`);
+  PRODUTOS.forEach(p => fP.innerHTML += `<option value="${p}">${p}</option>`);
+  REGIOES.forEach(r => {
+    fR.innerHTML += `<option value="${r}">${r}</option>`;
+    fRL.innerHTML += `<option value="${r}">${r}</option>`;
+  });
+}
+
+/* =========================================================
+   ATUALIZAÇÃO DO DASHBOARD
+   ========================================================= */
+function atualizarDashboard() {
+  const vendas = carregarVendas();
+  const total = vendas.reduce((s,v) => s + v.valor, 0);
+  const totalBonus = vendas.reduce((s,v) => s + calcularBonus(v.valor), 0);
+  const atrasado = vendas.filter(v => v.status === 'Atrasado').length;
+  const noPrazo = vendas.filter(v => v.status === 'No prazo').length;
+  const antecipado = vendas.filter(v => v.status === 'Antecipado').length;
+  const totalEntregas = vendas.length;
+
+  document.getElementById('kpiFaturamento').textContent = formatarMoeda(total);
+  document.getElementById('kpiFatSub').textContent = `${totalEntregas} vendas registradas`;
+  document.getElementById('kpiBonus').textContent = formatarMoeda(totalBonus);
+  document.getElementById('kpiNoPrazo').textContent = noPrazo;
+  document.getElementById('kpiNoPrazoPct').textContent =
+    `${totalEntregas ? ((noPrazo/totalEntregas)*100).toFixed(1) : 0}% do total`;
+  document.getElementById('kpiAtrasado').textContent = atrasado;
+  document.getElementById('kpiAtrasadoPct').textContent =
+    `${totalEntregas ? ((atrasado/totalEntregas)*100).toFixed(1) : 0}% do total`;
+
+  // Gráfico por região
+  const porRegiao = {};
+  REGIOES.forEach(r => porRegiao[r] = 0);
+  vendas.forEach(v => porRegiao[v.regiao] = (porRegiao[v.regiao] || 0) + v.valor);
+  renderGraficoBarras('graficoRegiao', porRegiao, total, '');
+
+  // Gráfico por produto
+  const porProduto = {};
+  PRODUTOS.forEach(p => porProduto[p] = 0);
+  vendas.forEach(v => porProduto[v.produto] = (porProduto[v.produto] || 0) + v.valor);
+  renderGraficoBarras('graficoProduto', porProduto, total, 'verde');
+
+  // Top vendedores
+  const porVend = {};
+  VENDEDORES.forEach(v => porVend[v] = { fat:0, bonus:0 });
+  vendas.forEach(v => {
+    porVend[v.vendedor].fat += v.valor;
+    porVend[v.vendedor].bonus += calcularBonus(v.valor);
+  });
+  const ranking = Object.entries(porVend)
+    .map(([nome, d]) => ({ nome, ...d }))
+    .sort((a,b) => b.fat - a.fat);
+  renderTopVendedores(ranking);
+
+  // Status entregas
+  const statusData = {
+    'Atrasado': atrasado,
+    'No prazo': noPrazo,
+    'Antecipado': antecipado
+  };
+  renderGraficoStatus('graficoStatus', statusData, totalEntregas);
+
+  // Relatórios
+  renderGraficoBarras('relVendedor',
+    Object.fromEntries(ranking.map(r => [r.nome, r.fat])), total, '');
+  renderGraficoBarras('relRegiao', porRegiao, total, 'verde');
+}
+
+function renderGraficoBarras(containerId, dados, total, corExtra) {
+  const cont = document.getElementById(containerId);
+  const max = Math.max(...Object.values(dados), 1);
+  cont.innerHTML = '';
+  Object.entries(dados)
+    .sort((a,b) => b[1] - a[1])
+    .forEach(([nome, valor]) => {
+      const pct = (valor / max) * 100;
+      const pctTotal = total ? ((valor/total)*100).toFixed(1) : 0;
+      cont.innerHTML += `
+        <div class="barra-item">
+          <div class="label">
+            <span class="nome">${nome}</span>
+            <span class="valor">${formatarMoeda(valor)} (${pctTotal}%)</span>
+          </div>
+          <div class="barra-track">
+            <div class="barra-fill ${corExtra}" style="width:${pct}%"></div>
+          </div>
+        </div>`;
+    });
+}
+
+function renderGraficoStatus(containerId, dados, total) {
+  const cont = document.getElementById(containerId);
+  const cores = { 'Atrasado':'vermelho', 'No prazo':'', 'Antecipado':'verde' };
+  cont.innerHTML = '';
+  Object.entries(dados).forEach(([nome, valor]) => {
+    const pct = total ? (valor/total)*100 : 0;
+    cont.innerHTML += `
+      <div class="barra-item">
+        <div class="label">
+          <span class="nome">${nome}</span>
+          <span class="valor">${valor} pedidos (${pct.toFixed(1)}%)</span>
+        </div>
+        <div class="barra-track">
+          <div class="barra-fill ${cores[nome]}" style="width:${pct}%"></div>
+        </div>
+      </div>`;
+  });
+}
+
+function renderTopVendedores(ranking) {
+  const cont = document.getElementById('topVendedores');
+  cont.innerHTML = '';
+  ranking.slice(0, 5).forEach((v, i) => {
+    const classe = i === 0 ? 'ouro' : i === 1 ? 'prata' : i === 2 ? 'bronze' : '';
+    cont.innerHTML += `
+      <li>
+        <span class="pos ${classe}">${i+1}º</span>
+        <div class="info">
+          <div class="nome">${v.nome}</div>
+          <div class="bonus">Bônus: ${formatarMoeda(v.bonus)}</div>
+        </div>
+        <div class="fat">${formatarMoeda(v.fat)}</div>
+      </li>`;
+  });
+}
+
+/* =========================================================
+   TABELAS (VENDAS E LOGÍSTICA)
+   ========================================================= */
+function atualizarTabelaVendas() {
+  const vendas = carregarVendas();
+  const fV = document.getElementById('filtroVendedor').value;
+  const fP = document.getElementById('filtroProduto').value;
+  const fR = document.getElementById('filtroRegiao').value;
+  const fB = document.getElementById('filtroBusca').value.toLowerCase();
+
+  const filtradas = vendas.filter(v =>
+    (!fV || v.vendedor === fV) &&
+    (!fP || v.produto === fP) &&
+    (!fR || v.regiao === fR) &&
+    (!fB || v.vendedor.toLowerCase().includes(fB) || v.produto.toLowerCase().includes(fB))
+  );
+
+  const tbody = document.getElementById('tabelaVendas');
+  tbody.innerHTML = '';
+  if (!filtradas.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:#94a3b8;">Nenhuma venda encontrada</td></tr>';
+    return;
+  }
+  filtradas.sort((a,b) => b.data.localeCompare(a.data)).forEach(v => {
+    tbody.innerHTML += `
+      <tr>
+        <td>${formatarData(v.data)}</td>
+        <td><strong>${v.vendedor}</strong></td>
+        <td>${v.produto}</td>
+        <td>${v.regiao}</td>
+        <td>${formatarMoeda(v.valor)}</td>
+        <td style="color:var(--verde-escuro); font-weight:600;">${formatarMoeda(calcularBonus(v.valor))}</td>
+        <td><span class="badge ${classeStatus(v.status)}">${v.status}</span></td>
+        <td class="acoes">
+          <button class="btn btn-editar" onclick="editarVendaUI(${v.id})">✏️</button>
+          <button class="btn btn-perigo" onclick="excluirVendaUI(${v.id})">🗑️</button>
+        </td>
+      </tr>`;
+  });
+}
+
+function atualizarTabelaLogistica() {
+  const vendas = carregarVendas();
+  const fS = document.getElementById('filtroStatusLog').value;
+  const fR = document.getElementById('filtroRegiaoLog').value;
+
+  const filtradas = vendas.filter(v =>
+    (!fS || v.status === fS) && (!fR || v.regiao === fR)
+  );
+
+  const tbody = document.getElementById('tabelaLogistica');
+  tbody.innerHTML = '';
+  if (!filtradas.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:24px; color:#94a3b8;">Nenhum pedido encontrado</td></tr>';
+    return;
+  }
+  filtradas.sort((a,b) => {
+    const ordem = { 'Atrasado':0, 'No prazo':1, 'Antecipado':2 };
+    return ordem[a.status] - ordem[b.status];
+  }).forEach(v => {
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>#${String(v.id).padStart(4,'0')}</strong></td>
+        <td>${formatarData(v.data)}</td>
+        <td>${v.vendedor}</td>
+        <td>${v.regiao}</td>
+        <td>${formatarMoeda(v.valor)}</td>
+        <td><span class="badge ${classeStatus(v.status)}">${v.status}</span></td>
+        <td class="acoes">
+          <button class="btn btn-editar" onclick="editarVendaUI(${v.id})">✏️</button>
+          <button class="btn btn-perigo" onclick="excluirVendaUI(${v.id})">🗑️</button>
+        </td>
+      </tr>`;
+  });
+}
+
+/* =========================================================
+   FORMULÁRIO DE VENDA
+   ========================================================= */
+document.getElementById('valor').addEventListener('input', e => {
+  const v = parseFloat(e.target.value) || 0;
+  document.getElementById('bonusPreview').textContent = formatarMoeda(calcularBonus(v));
+});
+
+document.getElementById('formVenda').addEventListener('submit', e => {
+  e.preventDefault();
+  const id = document.getElementById('vendaId').value;
+  const venda = {
+    vendedor: document.getElementById('vendedor').value,
+    produto: document.getElementById('produto').value,
+    valor: parseFloat(document.getElementById('valor').value),
+    regiao: document.getElementById('regiao').value,
+    status: document.getElementById('status').value,
+    data: document.getElementById('dataVenda').value || new Date().toISOString().slice(0,10)
+  };
+
+  if (id) {
+    editarVenda(parseInt(id), venda);
+    mostrarToast('✅ Venda atualizada com sucesso!');
+  } else {
+    adicionarVenda(venda);
+    mostrarToast('✅ Venda registrada com sucesso!');
+  }
+  limparFormulario();
+  atualizarTudo();
+});
+
+function limparFormulario() {
+  document.getElementById('formVenda').reset();
+  document.getElementById('vendaId').value = '';
+  document.getElementById('bonusPreview').textContent = 'R$ 0,00';
+  document.getElementById('btnSalvar').textContent = '💾 Salvar Venda';
+}
+
+function editarVendaUI(id) {
+  const vendas = carregarVendas();
+  const v = vendas.find(x => x.id === id);
+  if (!v) return;
+  document.getElementById('vendaId').value = v.id;
+  document.getElementById('vendedor').value = v.vendedor;
+  document.getElementById('produto').value = v.produto;
+  document.getElementById('valor').value = v.valor;
+  document.getElementById('regiao').value = v.regiao;
+  document.getElementById('status').value = v.status;
+  document.getElementById('dataVenda').value = v.data;
+  document.getElementById('bonusPreview').textContent = formatarMoeda(calcularBonus(v.valor));
+  document.getElementById('btnSalvar').textContent = '💾 Atualizar Venda';
+
+  // Navega para formulário
+  document.querySelector('[data-secao="nova-venda"]').click();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function excluirVendaUI(id) {
+  if (!confirm('Deseja realmente excluir esta venda?')) return;
+  excluirVenda(id);
+  mostrarToast('🗑️ Venda excluída');
+  atualizarTudo();
+}
+
+/* =========================================================
+   UTILITÁRIOS
+   ========================================================= */
+function mostrarToast(msg, erro = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.toggle('erro', erro);
+  t.classList.add('visivel');
+  setTimeout(() => t.classList.remove('visivel'), 2800);
+}
+
+function exportarJSON() {
+  const vendas = carregarVendas();
+  const blob = new Blob([JSON.stringify(vendas, null, 2)], { type:'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `vendas_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  mostrarToast('📥 Exportação concluída');
+}
+
+function resetarDados() {
+  if (!confirm('Isso apagará todos os dados e carregará os dados iniciais. Continuar?')) return;
+  localStorage.removeItem(CHAVE_STORAGE);
+  mostrarToast('🔄 Dados resetados');
+  atualizarTudo();
+}
+
+function atualizarTudo() {
+  atualizarDashboard();
+  atualizarTabelaVendas();
+  atualizarTabelaLogistica();
+}
+
+/* =========================================================
+   EVENTOS DE FILTRO
+   ========================================================= */
+['filtroVendedor','filtroProduto','filtroRegiao','filtroBusca'].forEach(id => {
+  document.getElementById(id).addEventListener('input', atualizarTabelaVendas);
+});
+['filtroStatusLog','filtroRegiaoLog'].forEach(id => {
+  document.getElementById(id).addEventListener('change', atualizarTabelaLogistica);
+});
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+document.getElementById('dataAtual').textContent =
+  '📅 ' + new Date().toLocaleDateString('pt-BR',
+    { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
+document.getElementById('dataVenda').valueAsDate = new Date();
+
+popularSelects();
+atualizarTudo();
+</script>
+</body>
+</html>
